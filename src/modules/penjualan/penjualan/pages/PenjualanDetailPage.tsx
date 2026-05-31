@@ -219,11 +219,12 @@ const suppressOklchWarnings = () => {
   };
 };
 
-// Helper to get safely proxied signature image URL to avoid CORS when converting to PDF via HTML2Canvas
+// Helper to safely get signature image URL
+// Tigris natively supports CORS, so we can use the direct URL to prevent Vercel 500 proxy errors
 const getProxyImageUrl = (url?: string | null) => {
   if (!url) return undefined;
   if (url.startsWith('data:')) return url;
-  return `/api/proxy-image?url=${encodeURIComponent(url)}`;
+  return url;
 };
 
 interface InvoiceTemplateProps {

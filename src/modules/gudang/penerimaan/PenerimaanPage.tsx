@@ -156,7 +156,7 @@ export const PenerimaanPage: React.FC = () => {
             ) : data.length > 0 ? (
               data.map((row) => (
                 <TableRow 
-                  key={row.id || row.purchase_product_id} 
+                  key={row.id || `${row.shipping_id}-${row.purchase_product_id}`} 
                   noBorder={true} 
                   className="cursor-pointer select-none group hover:bg-[#f8fafc] transition-colors"
                   onClick={() => navigate(activeTab === 'pending' 

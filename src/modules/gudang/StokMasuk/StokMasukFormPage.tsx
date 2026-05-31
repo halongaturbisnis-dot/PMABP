@@ -71,7 +71,9 @@ export const StokMasukFormPage: React.FC = () => {
             setRunningStock(stock);
             
             // Sisa kuantitas yang bisa dimasukkan
-            const remainingQty = info.qty_max - info.qty_already_in;
+            const maxQty = Number(info.qty_max) || 0;
+            const alreadyQty = Number(info.qty_already_in) || 0;
+            const remainingQty = maxQty - alreadyQty;
 
             // Definisikan valuasi awal dari penerimaan/proses
             setFormData({

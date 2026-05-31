@@ -300,7 +300,7 @@ export const stokMasukService = {
           pr.accepted_valuation as total_price_in,
           pr.datetime as receipt_date,
           pp.name,
-          sb.sku,
+          (SELECT sku FROM stok_berjalan WHERE name = pp.name AND category = pp.category AND sub_category = pp.sub_category LIMIT 1) as sku,
           pp.category,
           pp.sub_category,
           pp.unit,
@@ -308,8 +308,7 @@ export const stokMasukService = {
         FROM penerimaan pr
         JOIN pembelian_produk pp ON pr.purchase_product_id = pp.id
         JOIN pembelian p ON pr.purchase_id = p.id
-        LEFT JOIN stok_berjalan sb ON pp.name = sb.name
-        WHERE pr.sorting_type = 'Non QC'
+        WHERE pr.sorting_type != 'QC'
 
         UNION ALL
 
@@ -326,7 +325,7 @@ export const stokMasukService = {
           pr.current_valuation as total_price_in,
           pr.datetime as receipt_date,
           pp.name,
-          sb.sku,
+          (SELECT sku FROM stok_berjalan WHERE name = pp.name AND category = pp.category AND sub_category = pp.sub_category LIMIT 1) as sku,
           pp.category,
           pp.sub_category,
           pp.unit,
@@ -334,8 +333,7 @@ export const stokMasukService = {
         FROM pemrosesan pr
         JOIN pembelian_produk pp ON pr.pembelian_produk_id = pp.id
         JOIN pembelian p ON pr.pembelian_id = p.id
-        LEFT JOIN stok_berjalan sb ON pp.name = sb.name
-        WHERE pr.status IN ('completed', 'processing')
+        -- Dihapus kondisi pr.status IN ('completed', 'processing') karena kata user: "ngga peduli dia sedang processing atau completed statusnya"
       ) 
       WHERE (qty_max - qty_already_in) > 0
       ORDER BY receipt_date DESC

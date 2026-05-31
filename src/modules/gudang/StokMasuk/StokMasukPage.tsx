@@ -171,9 +171,9 @@ export const StokMasukPage: React.FC = () => {
                 </TableRow>
               ))
             ) : data.length > 0 ? (
-              data.map((row) => (
+              data.map((row, idx) => (
                 <TableRow 
-                  key={row.id || `${row.receiving_id}-${row.processing_id}`} 
+                  key={row.id || `${row.receiving_id}-${row.processing_id || 'null'}-${row.purchase_product_id}-${idx}`} 
                   noBorder={true} 
                   className="cursor-pointer select-none group hover:bg-[#f8fafc] transition-colors"
                   onClick={() => {
@@ -203,7 +203,7 @@ export const StokMasukPage: React.FC = () => {
                       </TableCell>
                       <TableCell noBorder={true} className="!text-left px-[1rem]">
                         <span className="text-[0.875rem] font-bold text-[#1e293b]">
-                          {row.qty_max - row.qty_already_in}
+                          {(Number(row.qty_max) || 0) - (Number(row.qty_already_in) || 0)}
                         </span>
                       </TableCell>
                       <TableCell noBorder={true} className="!text-left px-[1rem]">
@@ -249,7 +249,7 @@ export const StokMasukPage: React.FC = () => {
                       </TableCell>
                       <TableCell noBorder={true} className="!text-left px-[1rem]">
                         <span className="text-[0.875rem] font-bold text-[#1e293b]">
-                          {row.qty_in}
+                          {Number(row.qty_in) || 0}
                         </span>
                       </TableCell>
                       <TableCell noBorder={true} className="!text-left px-[1rem]">

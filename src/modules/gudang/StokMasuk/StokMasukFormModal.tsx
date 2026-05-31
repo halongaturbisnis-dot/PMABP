@@ -66,7 +66,10 @@ export const StokMasukFormModal: React.FC<StokMasukFormModalProps> = ({
         try {
           // Force user to choose SKU first
           setRunningStock(null);
-          const remainingQty = queueItem.qty_max - queueItem.qty_already_in;
+          const maxQty = Number(queueItem.qty_max) || 0;
+          const alreadyQty = Number(queueItem.qty_already_in) || 0;
+          const remainingQty = maxQty - alreadyQty;
+          
           setFormData({
             purchase_id: queueItem.purchase_id,
             purchase_product_id: queueItem.purchase_product_id,

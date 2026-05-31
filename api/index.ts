@@ -161,11 +161,23 @@ app.get("/api/proxy-image", async (req, res) => {
       res.status(fetchResponse.status).send('Failed to fetch image');
       return;
     }
-    const buffer = await fetchResponse.arrayBuffer();
+    
+    // Support both Node native fetch (.arrayBuffer) and node-fetch v2 (.buffer)
+    let buffer;
+    if (typeof fetchResponse.arrayBuffer === 'function') {
+      const ab = await fetchResponse.arrayBuffer();
+      buffer = Buffer.from(ab);
+    } else if (typeof (fetchResponse as any).buffer === 'function') {
+      buffer = await (fetchResponse as any).buffer();
+    } else {
+      throw new Error('Unsupported fetch response type');
+    }
+
     res.setHeader('Content-Type', fetchResponse.headers.get('content-type') || 'image/jpeg');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.send(Buffer.from(buffer));
+    res.send(buffer);
   } catch (err: any) {
+    console.error("[Proxy Image Error]", err);
     res.status(500).send(err.message);
   }
 });
