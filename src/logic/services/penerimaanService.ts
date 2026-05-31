@@ -277,9 +277,9 @@ export const penerimaanService = {
         sh.datetime as shipping_date
       FROM pembelian_produk pp
       JOIN pembelian p ON pp.purchase_id = p.id
-      JOIN suplier s ON p.supplier_id = s.id
+      LEFT JOIN suplier s ON p.supplier_id = s.id
       JOIN pengiriman sh ON sh.purchase_id = p.id
-      WHERE sh.shipping_type = 'Internal'
+      WHERE p.shipping_type = 'Internal'
       AND NOT EXISTS (
         SELECT 1 FROM penerimaan pr 
         WHERE pr.shipping_id = sh.id 

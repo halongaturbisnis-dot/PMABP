@@ -43,7 +43,7 @@ export const PenerimaanDetailPage: React.FC = () => {
               sh.vehicle_number, sh.driver_name
             FROM pembelian_produk pp
             JOIN pembelian p ON pp.purchase_id = p.id
-            JOIN suplier s ON p.supplier_id = s.id
+            LEFT JOIN suplier s ON p.supplier_id = s.id
             JOIN pengiriman sh ON sh.id = ?
             WHERE pp.id = ?
           `;
