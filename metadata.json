@@ -1,0 +1,11 @@
+{
+  "name": "Remix: Remix: Pangan Mas Abadi 2.0 v4",
+  "description": "Pangan Mas Abadi 2.0",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
