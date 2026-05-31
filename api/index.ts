@@ -135,8 +135,12 @@ app.post("/api/ai/analyze-report", express.json(), async (req, res) => {
     res.end();
   } catch (err: any) {
     console.error("[AI Server Error]:", err?.message || err);
-    res.write(`data: ${JSON.stringify({ error: err?.message || "Internal server error" })}\n\n`);
-    res.end();
+    if (!res.headersSent) {
+      res.status(500).json({ error: err?.message || "Internal server error" });
+    } else {
+      res.write(`data: ${JSON.stringify({ error: err?.message || "Internal server error" })}\n\n`);
+      res.end();
+    }
   }
 });
 

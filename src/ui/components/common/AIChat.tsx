@@ -152,7 +152,16 @@ export const AIChat: React.FC<AIChatProps> = ({ startDate, endDate }) => {
               if (response.ok) break; 
               // Jika muncul error 429 atau lainnya, coba model berikutnya
               if (response.status !== 429 && i === AI_MODEL_CONFIG.rotations.length - 1) {
-                  throw new Error('Gagal memproses data.');
+                  let errMsg = 'Gagal memproses data.';
+                  try {
+                      const errData = await response.json();
+                      if (errData && errData.error) {
+                          errMsg = errData.error;
+                      }
+                  } catch (e) {
+                      // non-JSON or standard error
+                  }
+                  throw new Error(errMsg);
               }
           }
       }

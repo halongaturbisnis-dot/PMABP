@@ -105,7 +105,16 @@ export const AIInsightWidget: React.FC<AIInsightWidgetProps> = ({ startDate, end
       });
       
       if (!response.ok) {
-        throw new Error('Gagal memproses data. Pastikan koneksi server aktif.');
+        let errMsg = 'Gagal memproses data. Pastikan koneksi server aktif.';
+        try {
+          const errData = await response.json();
+          if (errData && errData.error) {
+            errMsg = errData.error;
+          }
+        } catch (e) {
+          // non-JSON or standard error
+        }
+        throw new Error(errMsg);
       }
 
       const reader = response.body?.getReader();
