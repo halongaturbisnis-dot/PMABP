@@ -5,6 +5,9 @@ import { appAssets } from '../../ui/styles/assets';
 import { syncActualTime, getTimezoneInfo } from '../utils/time';
 import { browserStorage } from '../utils/browserStorage';
 
+import idTranslations from '../locales/id.json';
+import enTranslations from '../locales/en.json';
+
 interface ViewportState {
   width: number;
   height: number;
@@ -211,9 +214,7 @@ export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const loadTranslations = async () => {
       try {
-        const response = await fetch(`/src/logic/locales/${state.language}.json`);
-        if (!response.ok) throw new Error('Locale not found');
-        const data = await response.json();
+        const data = state.language === 'en' ? enTranslations : idTranslations;
         setState(prev => ({ ...prev, translations: data }));
       } catch (error) {
         console.error('Failed to load translations:', error);
