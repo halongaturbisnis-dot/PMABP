@@ -633,7 +633,7 @@ export const LaporanFinansialPage: React.FC = () => {
             {/* Floating AI Button - Revised Animation */}
       <button 
         onClick={() => setIsChatOpen(true)}
-        className="fixed bottom-6 right-6 w-16 h-16 z-[100] group focus:outline-none"
+        className="hidden fixed bottom-6 right-6 w-16 h-16 z-[100] group focus:outline-none"
         style={{
           // Menghapus background, menambah filter drop shadow agar menonjol dari background halaman
           filter: 'drop-shadow(0px 10px 15px rgba(0, 70, 145, 0.3))',
