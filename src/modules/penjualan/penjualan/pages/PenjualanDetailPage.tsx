@@ -377,12 +377,12 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
   const totalPages = pages.length;
 
   return (
-    <div id={id} className="bg-slate-100 flex flex-col gap-6 select-none print:bg-white print:gap-0">
+    <div id={id} className="bg-Slate100 flex flex-col gap-6 select-none print:bg-white print:gap-0">
       {pages.map((page, idx) => {
         return (
           <div 
             key={idx}
-            className="invoice-page-sheet bg-white text-black font-sans leading-relaxed relative flex flex-col justify-between border border-slate-200 shadow-sm print:border-0 print:shadow-none"
+            className="invoice-page-sheet bg-white text-black font-sans leading-relaxed relative flex flex-col justify-between border border-Slate200 shadow-sm print:border-0 print:shadow-none"
             style={{ 
               width: "794px", 
               height: "1123px", 
@@ -398,7 +398,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
             <div className="flex-1 flex flex-col">
               {/* BRAND HEADER (Only on Page 1) */}
               {page.showHeader ? (
-                <div className="mb-6 border-b-2 border-slate-800 pb-6">
+                <div className="mb-6 border-b-2 border-Slate800 pb-6">
                   {/* DevBrand Logo on its own row */}
                   {appAssets.devBrand && (
                     <div className="mb-4">
@@ -410,26 +410,26 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
                       <h1 className="text-2xl font-black text-[#D4AF37] uppercase tracking-wide leading-tight mb-2">
                         {appAssets.Company}
                       </h1>
-                    <p className="text-xs text-slate-600 max-w-[400px] leading-relaxed break-words">
+                    <p className="text-xs text-Slate600 max-w-[400px] leading-relaxed break-words">
                       {appAssets.Alamat}
                     </p>
                   </div>
                   <div className="text-right">
-                    <h2 className="text-3xl font-black tracking-wider uppercase text-slate-800 mb-2">
+                    <h2 className="text-3xl font-black tracking-wider uppercase text-Slate800 mb-2">
                       INVOICE
                     </h2>
-                    <div className="text-xs text-slate-600 space-y-1">
-                      <p><span className="font-semibold text-slate-800">No. Invoice:</span> {data.invoice_number}</p>
-                        <p><span className="font-semibold text-slate-800">Tanggal:</span> {data.datetime ? new Date(data.datetime).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}</p>
-                        {data.submission_number && <p><span className="font-semibold text-slate-800">No. Pengajuan:</span> {data.submission_number}</p>}
+                    <div className="text-xs text-Slate600 space-y-1">
+                      <p><span className="font-semibold text-Slate800">No. Invoice:</span> {data.invoice_number}</p>
+                        <p><span className="font-semibold text-Slate800">Tanggal:</span> {data.datetime ? new Date(data.datetime).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}</p>
+                        {data.submission_number && <p><span className="font-semibold text-Slate800">No. Pengajuan:</span> {data.submission_number}</p>}
                       </div>
                     </div>
                   </div>
                 </div>
               ) : (
                 /* MINI HEADER FOR SECOND+ PAGES */
-                <div className="flex justify-between items-center mb-6 border-b border-slate-300 pb-3 text-xs text-slate-500">
-                  <span className="font-bold uppercase tracking-wider text-slate-700">{appAssets.Company} &bull; INVOICE</span>
+                <div className="flex justify-between items-center mb-6 border-b border-Slate300 pb-3 text-xs text-Slate500">
+                  <span className="font-bold uppercase tracking-wider text-Slate700">{appAssets.Company} &bull; INVOICE</span>
                   <span>No: {data.invoice_number}</span>
                 </div>
               )}
@@ -437,12 +437,12 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
               {/* CUSTOMER INFO (Only on Page 1) */}
               {page.showCustomer && (
                 <div className="mb-6">
-                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex flex-col justify-start w-full">
-                    <h3 className="font-bold text-slate-800 uppercase text-xs tracking-wider mb-2 border-b border-slate-200 pb-1">Kepada:</h3>
-                    <p className="font-bold text-slate-950 text-base">Tn/Ny. {data.customer_name}</p>
-                    {data.customer_company && <p className="font-semibold text-slate-700 text-xs mt-0.5">{data.customer_company}</p>}
-                    {data.customer_address && <p className="text-xs text-slate-600 mt-1 leading-normal w-full break-words">{data.customer_address}</p>}
-                    {data.customer_phone && <p className="text-xs text-slate-600 mt-1.5 font-mono"><span className="font-sans text-slate-500">Telp</span> {data.customer_phone}</p>}
+                  <div className="bg-Slate50 p-4 rounded-lg border border-Slate100 flex flex-col justify-start w-full">
+                    <h3 className="font-bold text-Slate800 uppercase text-xs tracking-wider mb-2 border-b border-Slate200 pb-1">Kepada:</h3>
+                    <p className="font-bold text-Slate950 text-base">Tn/Ny. {data.customer_name}</p>
+                    {data.customer_company && <p className="font-semibold text-Slate700 text-xs mt-0.5">{data.customer_company}</p>}
+                    {data.customer_address && <p className="text-xs text-Slate600 mt-1 leading-normal w-full break-words">{data.customer_address}</p>}
+                    {data.customer_phone && <p className="text-xs text-Slate600 mt-1.5 font-mono"><span className="font-sans text-Slate500">Telp</span> {data.customer_phone}</p>}
                   </div>
                 </div>
               )}
@@ -450,8 +450,8 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
               {/* PAGINATED ITEMS TABLE */}
               {page.items.length > 0 && (
                 <div className="mb-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">Daftar Produk:</h3>
-                  <table className="w-full table-fixed border-collapse border border-slate-300 text-xs">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-Slate800 mb-2">Daftar Produk:</h3>
+                  <table className="w-full table-fixed border-collapse border border-Slate300 text-xs">
                     <colgroup>
                       <col style={{ width: '8%' }} />
                       <col style={{ width: '49%' }} />
@@ -459,24 +459,24 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
                       <col style={{ width: '25%' }} />
                     </colgroup>
                     <thead>
-                      <tr className="bg-slate-100 text-slate-800 border-b border-slate-300">
-                        <th className="border border-slate-300 px-3 py-2 font-bold text-center">No</th>
-                        <th className="border border-slate-300 px-3 py-2 font-bold text-left">Nama Produk</th>
-                        <th className="border border-slate-300 px-3 py-2 font-bold text-center">Jumlah</th>
-                        <th className="border border-slate-300 px-3 py-2 font-bold text-right">Harga</th>
+                      <tr className="bg-Slate100 text-Slate800 border-b border-Slate300">
+                        <th className="border border-Slate300 px-3 py-2 font-bold text-center">No</th>
+                        <th className="border border-Slate300 px-3 py-2 font-bold text-left">Nama Produk</th>
+                        <th className="border border-Slate300 px-3 py-2 font-bold text-center">Jumlah</th>
+                        <th className="border border-Slate300 px-3 py-2 font-bold text-right">Harga</th>
                       </tr>
                     </thead>
                     <tbody>
                       {page.items.map((row, rowIdx) => {
                         const item = row.data;
                         return (
-                          <tr key={rowIdx} className="hover:bg-slate-50 border-b border-slate-200">
-                            <td className="border border-slate-300 px-3 py-2 text-center text-slate-500 truncate">{row.originalIndex + 1}</td>
-                            <td className="border border-slate-300 px-3 py-2 font-semibold text-slate-900 break-words">
+                          <tr key={rowIdx} className="hover:bg-Slate50 border-b border-Slate200">
+                            <td className="border border-Slate300 px-3 py-2 text-center text-Slate500 truncate">{row.originalIndex + 1}</td>
+                            <td className="border border-Slate300 px-3 py-2 font-semibold text-Slate900 break-words">
                               {item.name}
                             </td>
-                            <td className="border border-slate-300 px-3 py-2 text-center font-semibold text-slate-800 truncate">{item.qty} {item.unit}</td>
-                            <td className="border border-slate-300 px-3 py-2 text-right font-bold text-slate-900 truncate">Rp {(item.total_selling_price || 0).toLocaleString('id-ID')}</td>
+                            <td className="border border-Slate300 px-3 py-2 text-center font-semibold text-Slate800 truncate">{item.qty} {item.unit}</td>
+                            <td className="border border-Slate300 px-3 py-2 text-right font-bold text-Slate900 truncate">Rp {(item.total_selling_price || 0).toLocaleString('id-ID')}</td>
                           </tr>
                         );
                       })}
@@ -488,8 +488,8 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
               {/* PAGINATED ADDITIONAL COSTS */}
               {page.costs.length > 0 && (
                 <div className="mb-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">Biaya Tambahan:</h3>
-                  <table className="w-full table-fixed border-collapse border border-slate-300 text-xs text-slate-800">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-Slate800 mb-2">Biaya Tambahan:</h3>
+                  <table className="w-full table-fixed border-collapse border border-Slate300 text-xs text-Slate800">
                     <colgroup>
                       <col style={{ width: '8%' }} />
                       <col style={{ width: '32%' }} />
@@ -497,22 +497,22 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
                       <col style={{ width: '25%' }} />
                     </colgroup>
                     <thead>
-                      <tr className="bg-slate-100 text-slate-800 border-b border-slate-300">
-                        <th className="border border-slate-300 px-3 py-2 font-bold text-center">No</th>
-                        <th className="border border-slate-300 px-3 py-2 font-bold text-left">Nama Biaya</th>
-                        <th className="border border-slate-300 px-3 py-2 font-bold text-left">Keterangan</th>
-                        <th className="border border-slate-300 px-3 py-2 font-bold text-right">Nominal</th>
+                      <tr className="bg-Slate100 text-Slate800 border-b border-Slate300">
+                        <th className="border border-Slate300 px-3 py-2 font-bold text-center">No</th>
+                        <th className="border border-Slate300 px-3 py-2 font-bold text-left">Nama Biaya</th>
+                        <th className="border border-Slate300 px-3 py-2 font-bold text-left">Keterangan</th>
+                        <th className="border border-Slate300 px-3 py-2 font-bold text-right">Nominal</th>
                       </tr>
                     </thead>
                     <tbody>
                       {page.costs.map((row, rowIdx) => {
                         const cost = row.data;
                         return (
-                          <tr key={rowIdx} className="hover:bg-slate-50 border-b border-slate-200">
-                            <td className="border border-slate-300 px-3 py-2 text-center text-slate-500 truncate">{row.originalIndex + 1}</td>
-                            <td className="border border-slate-300 px-3 py-2 font-semibold text-slate-900 break-words">{cost.nama_biaya}</td>
-                            <td className="border border-slate-300 px-3 py-2 text-slate-600 italic text-[11px] break-words">{cost.keterangan || '-'}</td>
-                            <td className="border border-slate-300 px-3 py-2 text-right font-bold text-slate-900 truncate">Rp {(cost.nominal || 0).toLocaleString('id-ID')}</td>
+                          <tr key={rowIdx} className="hover:bg-Slate50 border-b border-Slate200">
+                            <td className="border border-Slate300 px-3 py-2 text-center text-Slate500 truncate">{row.originalIndex + 1}</td>
+                            <td className="border border-Slate300 px-3 py-2 font-semibold text-Slate900 break-words">{cost.nama_biaya}</td>
+                            <td className="border border-Slate300 px-3 py-2 text-Slate600 italic text-[11px] break-words">{cost.keterangan || '-'}</td>
+                            <td className="border border-Slate300 px-3 py-2 text-right font-bold text-Slate900 truncate">Rp {(cost.nominal || 0).toLocaleString('id-ID')}</td>
                           </tr>
                         );
                       })}
@@ -524,33 +524,33 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
               {/* PAYMENT SUMMARY & TOTAL TAGIHAN */}
               {page.showSummary && (
                 <div className="grid grid-cols-2 gap-8 mt-4">
-                  <div className="border border-dashed border-slate-300 p-4 rounded-lg bg-slate-50/50">
-                    <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-1.5 mb-2 flex items-center gap-1.5">
+                  <div className="border border-dashed border-Slate300 p-4 rounded-lg bg-Slate50/50">
+                    <h3 className="font-bold text-xs uppercase tracking-wider text-Slate800 border-b border-Slate300 pb-1.5 mb-2 flex items-center gap-1.5">
                     
                       Detail Pembayaran
                     </h3>
-                    <table className="w-full text-xs text-slate-700">
+                    <table className="w-full text-xs text-Slate700">
                       <tbody>
                         <tr>
-                          <td className="py-1 text-slate-500">Tipe Pembayaran</td>
-                          <td className="py-1 font-semibold text-right text-slate-800">{data.payment_type || '-'}</td>
+                          <td className="py-1 text-Slate500">Tipe Pembayaran</td>
+                          <td className="py-1 font-semibold text-right text-Slate800">{data.payment_type || '-'}</td>
                         </tr>
                         <tr>
-                          <td className="py-1 text-slate-500">Metode Pembayaran</td>
-                          <td className="py-1 font-semibold text-right text-slate-800">{data.payment_method || '-'}</td>
+                          <td className="py-1 text-Slate500">Metode Pembayaran</td>
+                          <td className="py-1 font-semibold text-right text-Slate800">{data.payment_method || '-'}</td>
                         </tr>
-                        <tr className="border-t border-slate-200/50">
-                          <td className="py-1 text-slate-500">Uang Muka (Deposit)</td>
-                          <td className="py-1 font-bold text-right text-slate-900">Rp {(data.deposit || 0).toLocaleString('id-ID')}</td>
+                        <tr className="border-t border-Slate200/50">
+                          <td className="py-1 text-Slate500">Uang Muka (Deposit)</td>
+                          <td className="py-1 font-bold text-right text-Slate900">Rp {(data.deposit || 0).toLocaleString('id-ID')}</td>
                         </tr>
                         <tr>
-                          <td className="py-1 text-slate-500">Sisa Piutang (Outstanding)</td>
-                          <td className="py-1 font-bold text-right text-red-655">Rp {(data.outstanding || 0).toLocaleString('id-ID')}</td>
+                          <td className="py-1 text-Slate500">Sisa Piutang (Outstanding)</td>
+                          <td className="py-1 font-bold text-right text-Slate900">Rp {(data.outstanding || 0).toLocaleString('id-ID')}</td>
                         </tr>
                         {data.payment_type === 'Tempo' && data.sla_date && (
-                          <tr className="border-t border-dashed border-slate-300">
-                            <td className="py-1.5 font-bold text-slate-800">SLA Tanggal Jatuh Tempo</td>
-                            <td className="py-1.5 font-bold text-right text-amber-700">
+                          <tr className="border-t border-dashed border-Slate300">
+                            <td className="py-1.5 font-bold text-Slate800">SLA Tanggal Jatuh Tempo</td>
+                            <td className="py-1.5 font-bold text-right text-Slate900">
                               {new Date(data.sla_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </td>
                           </tr>
@@ -560,27 +560,27 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
                   </div>
 
                   <div className="flex flex-col justify-between">
-                    <table className="w-full border-collapse border border-slate-300 text-xs text-slate-800">
+                    <table className="w-full border-collapse border border-Slate300 text-xs text-Slate800">
                       <tbody>
-                        <tr className="border-b border-slate-300">
-                          <td className="p-2.5 font-semibold bg-slate-50 text-slate-600">Subtotal Barang</td>
-                          <td className="p-2.5 text-right font-bold text-slate-800">Rp {(data.sum_product_price || 0).toLocaleString('id-ID')}</td>
+                        <tr className="border-b border-Slate300">
+                          <td className="p-2.5 font-semibold bg-Slate50 text-Slate600">Subtotal Barang</td>
+                          <td className="p-2.5 text-right font-bold text-Slate800">Rp {(data.sum_product_price || 0).toLocaleString('id-ID')}</td>
                         </tr>
-                        <tr className="border-b border-slate-300">
-                          <td className="p-2.5 font-semibold bg-slate-50 text-slate-600">Total Biaya Tambahan</td>
-                          <td className="p-2.5 text-right font-bold text-slate-800">Rp {(data.sum_added_cost || 0).toLocaleString('id-ID')}</td>
+                        <tr className="border-b border-Slate300">
+                          <td className="p-2.5 font-semibold bg-Slate50 text-Slate600">Total Biaya Tambahan</td>
+                          <td className="p-2.5 text-right font-bold text-Slate800">Rp {(data.sum_added_cost || 0).toLocaleString('id-ID')}</td>
                         </tr>
-                        <tr className="border-b border-slate-300">
-                          <td className="p-2.5 font-semibold bg-slate-50 text-slate-600">Diskon</td>
-                          <td className="p-2.5 text-right font-bold text-emerald-600">- Rp {(data.discount_amount || 0).toLocaleString('id-ID')}</td>
+                        <tr className="border-b border-Slate300">
+                          <td className="p-2.5 font-semibold bg-Slate50 text-Slate600">Diskon</td>
+                          <td className="p-2.5 text-right font-bold text-Slate900">- Rp {(data.discount_amount || 0).toLocaleString('id-ID')}</td>
                         </tr>
-                        <tr className="border-b border-slate-300">
-                          <td className="p-2.5 font-semibold bg-slate-50 text-slate-600">Grand Total</td>
-                          <td className="p-2.5 text-right font-bold text-slate-800">Rp {(data.grand_total || 0).toLocaleString('id-ID')}</td>
+                        <tr className="border-b border-Slate300">
+                          <td className="p-2.5 font-semibold bg-Slate50 text-Slate600">Grand Total</td>
+                          <td className="p-2.5 text-right font-bold text-Slate800">Rp {(data.grand_total || 0).toLocaleString('id-ID')}</td>
                         </tr>
-                        <tr className="bg-slate-100 border-t border-slate-300">
-                          <td className="p-3 font-bold text-slate-800 uppercase text-xs">Total Tagihan</td>
-                          <td className="p-3 text-right font-black text-slate-950 text-base">
+                        <tr className="bg-Slate100 border-t border-Slate300">
+                          <td className="p-3 font-bold text-Slate800 uppercase text-xs">Total Tagihan</td>
+                          <td className="p-3 text-right font-black text-Slate950 text-base">
                             Rp {(data.payment_type === 'Tempo' ? (data.deposit || 0) : (data.grand_total || 0)).toLocaleString('id-ID')}
                           </td>
                         </tr>
@@ -594,10 +594,10 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
               {page.showSignature && (
                 <div className="flex justify-end mt-6">
                   <div className="text-center w-52">
-                    <p className="text-xs text-slate-500 mb-1 leading-none">Hormat Kami,</p>
-                    <p className="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-wider">{appAssets.Company}</p>
+                    <p className="text-xs text-Slate500 mb-1 leading-none">Hormat Kami,</p>
+                    <p className="text-[10px] text-Slate400 font-bold mb-1 uppercase tracking-wider">{appAssets.Company}</p>
                     
-                    <div className="h-20 w-full relative flex items-center justify-center border border-dashed border-slate-200 rounded my-2 bg-slate-50/30 overflow-hidden">
+                    <div className="h-20 w-full relative flex items-center justify-center border border-dashed border-Slate200 rounded my-2 bg-Slate50/30 overflow-hidden">
                       {signatureSrc ? (
                         <img 
                           src={signatureSrc} 
@@ -607,14 +607,14 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
                           crossOrigin="anonymous"
                         />
                       ) : (
-                        <p className="text-[10px] text-slate-400 italic">Belum disetujui</p>
+                        <p className="text-[10px] text-Slate400 italic">Belum disetujui</p>
                       )}
                     </div>
                     
-                    <p className="font-bold text-xs border-b border-slate-500 pb-1 text-slate-900 truncate">
+                    <p className="font-bold text-xs border-b border-Slate500 pb-1 text-Slate900 truncate">
                       {data.approver_name || '______________'}
                     </p>
-                    <p className="text-[10px] text-slate-500 mt-1 uppercase font-semibold">
+                    <p className="text-[10px] text-Slate500 mt-1 uppercase font-semibold">
                       {data.approver_jabatan || 'Manager'}
                     </p>
                   </div>
@@ -623,7 +623,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
             </div>
 
             {/* WATERMARK WITH TOTAL PAGES */}
-            <div className="mt-4 border-t border-slate-100 pt-2 flex justify-between items-center text-[10px] text-slate-400 font-mono">
+            <div className="mt-4 border-t border-Slate100 pt-2 flex justify-between items-center text-[10px] text-Slate400 font-mono">
               <span>{appAssets.Company}</span>
               <span className="font-bold">Halaman {page.pageNumber} dari {totalPages} &bull; ID: {data.invoice_number}</span>
             </div>
@@ -931,17 +931,17 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] flex flex-col bg-slate-900/80 backdrop-blur-sm select-none">
+    <div className="fixed inset-0 z-[99999] flex flex-col bg-Slate900/80 backdrop-blur-sm select-none">
       <div className={cn(
-        "flex flex-shrink-0 bg-white border-b border-slate-200 shadow-md",
+        "flex flex-shrink-0 bg-white border-b border-Slate200 shadow-md",
         isMobile ? "flex-col p-SpacingMedium gap-SpacingBase" : "flex-row justify-between items-center px-6 py-4"
       )}>
         <div className="space-y-0.5">
-          <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
+          <h2 className="text-base font-black text-Slate900 flex items-center gap-2">
             <FileText size={18} className="text-[#D4AF37]" />
             Pratinjau Dokumen Invoice
           </h2>
-          <p className="text-[11px] text-slate-500 font-medium">
+          <p className="text-[11px] text-Slate500 font-medium">
             Sistem Digitalisasi Invoice &bull; {data.invoice_number}
           </p>
         </div>
@@ -952,7 +952,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
               onClick={handleDownload}
               disabled={isGenerating || data.approval_status !== 'Approved'}
               className={cn(
-                "flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-slate-800 hover:bg-slate-900 rounded-lg active:scale-95 transition-all disabled:opacity-50",
+                "flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-Slate800 hover:bg-Slate900 rounded-lg active:scale-95 transition-all disabled:opacity-50",
                 (isGenerating || data.approval_status !== 'Approved') ? "cursor-not-allowed" : "cursor-pointer",
                 isMobile && "px-SpacingSmall"
               )}
@@ -965,7 +965,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
               onClick={handlePrint}
               disabled={isGenerating || data.approval_status !== 'Approved'}
               className={cn(
-                "flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg active:scale-95 transition-all disabled:opacity-50",
+                "flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-Slate100 hover:bg-Slate100 rounded-lg active:scale-95 transition-all disabled:opacity-50",
                 (isGenerating || data.approval_status !== 'Approved') ? "cursor-not-allowed" : "cursor-pointer",
                 isMobile && "px-SpacingSmall"
               )}
@@ -976,11 +976,11 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
           </div>
           
           <div className="flex items-center gap-2">
-            <div className="w-px h-6 bg-slate-200 mx-1" />
+            <div className="w-px h-6 bg-Slate200 mx-1" />
             
             <button 
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all cursor-pointer"
+              className="p-2 text-Slate400 hover:text-Slate600 hover:bg-Slate100 rounded-lg transition-all cursor-pointer"
               title="Tutup"
             >
               <X size={18} />
@@ -989,13 +989,13 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
         </div>
       </div>
 
-      <div className="flex-1 overflow-x-auto overflow-y-auto p-6 flex justify-center items-start bg-slate-100">
+      <div className="flex-1 overflow-x-auto overflow-y-auto p-6 flex justify-center items-start bg-Slate100">
         <div className="relative shadow-2xl rounded-sm my-4 bg-white">
           {isGenerating && (
             <div className="absolute inset-0 z-50 flex flex-col justify-center items-center bg-white/70 backdrop-blur-[1px] rounded-sm">
-              <div className="w-10 h-10 border-4 border-slate-800 border-t-transparent rounded-full animate-spin mb-3"></div>
-              <p className="text-xs font-bold text-slate-800">Menyusun Dokumen PDF...</p>
-              <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-wide">Harap Tunggu Sebentar</p>
+              <div className="w-10 h-10 border-4 border-Slate800 border-t-transparent rounded-full animate-spin mb-3"></div>
+              <p className="text-xs font-bold text-Slate800">Menyusun Dokumen PDF...</p>
+              <p className="text-[10px] text-Slate500 mt-1 uppercase tracking-wide">Harap Tunggu Sebentar</p>
             </div>
           )}
           
@@ -1346,7 +1346,7 @@ export const PenjualanDetailPage: React.FC = () => {
           <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-4 h-full", isMobile ? "col-span-1" : "col-span-5")}>
             <div className="space-y-SpacingSmall flex-1 flex flex-col justify-center">
               <Label id="det-label-datetime" className="flex items-center gap-1.5 text-TextColorBase">
-                <Calendar size={14} className="text-gray-500" />
+                <Calendar size={14} className="text-Slate500" />
                 Tanggal Transaksi
               </Label>
               <DateTimeInput
@@ -1366,14 +1366,14 @@ export const PenjualanDetailPage: React.FC = () => {
             </div>
             <div className="space-y-SpacingSmall flex-1 flex flex-col justify-center">
               <Label id="det-label-invoice" className="flex items-center gap-1.5 text-TextColorBase">
-                <Hash size={14} className="text-gray-500" />
+                <Hash size={14} className="text-Slate500" />
                 No. Invoice
               </Label>
               <TextInput
                 id="det-invoice"
                 disabled
                 value={data.invoice_number}
-                className="bg-gray-50 font-semibold"
+                className="bg-Slate50 font-semibold"
               />
             </div>
             <div className="space-y-SpacingSmall flex-1 flex flex-col justify-center">
@@ -1412,15 +1412,15 @@ export const PenjualanDetailPage: React.FC = () => {
         {/* APPROVAL WORKFLOW SECTION */}
         {(isApprover || !isPending) && (
           <div className="bg-white p-SpacingMedium rounded-RadiusLarge border border-ColorSidebarBorder/10 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
+            <div className="flex items-center gap-2 border-b border-Slate100 pb-3">
               <div className="w-1.5 h-6 bg-ColorPrimary rounded-full" />
               <h3 className="font-extrabold text-FontSizeBase text-TextColorBase tracking-tight">Verifikasi & Approval Invoice</h3>
               {data.approval_status && (
                 <span className={cn(
                   "ml-auto text-[0.625rem] font-black uppercase px-2.5 py-1 rounded-full",
                   data.approval_status === 'Pending' ? "bg-ColorSecondary/20 text-ColorSecondary" :
-                  data.approval_status === 'Approved' ? "bg-green-100 text-green-700" :
-                  "bg-red-100 text-red-700"
+                  data.approval_status === 'Approved' ? "bg-green-100 text-Slate900" :
+                  "bg-red-100 text-Slate900"
                 )}>
                   Status: {data.approval_status}
                 </span>
@@ -1454,7 +1454,7 @@ export const PenjualanDetailPage: React.FC = () => {
 
                   <div className="flex gap-SpacingSmall pt-2">
                     <PrimaryButton 
-                      className="flex-1 !bg-green-600 hover:!bg-green-700" 
+                      className="flex-1 !bg-Slate100 hover:!bg-Slate100" 
                       onClick={() => handleApprove('Approved')}
                       isLoading={isProcessing}
                       disabled={isProcessing || !signatureData}
@@ -1489,7 +1489,7 @@ export const PenjualanDetailPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-SpacingLarge">
                 <div className="space-y-2">
                   <Label id="view-approver-name">Approver</Label>
-                  <div className="p-3 bg-gray-50 rounded-RadiusSmall border border-gray-100 flex items-center gap-3">
+                  <div className="p-3 bg-Slate50 rounded-RadiusSmall border border-Slate100 flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-ColorPrimary/10 flex items-center justify-center text-ColorPrimary font-bold text-xs">
                       {data.approver_name?.charAt(0)}
                     </div>
@@ -1502,7 +1502,7 @@ export const PenjualanDetailPage: React.FC = () => {
 
                 <div className="space-y-2">
                   <Label id="view-approval-time">Waktu & Catatan</Label>
-                  <div className="p-3 bg-gray-50 rounded-RadiusSmall border border-gray-100 space-y-1">
+                  <div className="p-3 bg-Slate50 rounded-RadiusSmall border border-Slate100 space-y-1">
                     <p className="text-[0.6875rem] font-bold text-TextColorBase">
                       Diproses pada: <span className="font-normal">{data.approval_at ? new Date(data.approval_at).toLocaleString('id-ID') : '-'}</span>
                     </p>
@@ -1515,7 +1515,7 @@ export const PenjualanDetailPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label id="view-signature">Bukti Tanda Tangan</Label>
                   {data.approval_signature_url ? (
-                    <div className="border border-gray-100 rounded-RadiusSmall overflow-hidden bg-white h-24 flex items-center justify-center p-2 shadow-inner">
+                    <div className="border border-Slate100 rounded-RadiusSmall overflow-hidden bg-white h-24 flex items-center justify-center p-2 shadow-inner">
                       <img src={data.approval_signature_url} alt="Signature" className="max-h-full object-contain" referrerPolicy="no-referrer" />
                     </div>
                   ) : (
@@ -1550,7 +1550,7 @@ export const PenjualanDetailPage: React.FC = () => {
 
         {/* DETAILS TABS */}
         <div className="w-full bg-white rounded-RadiusLarge border border-ColorSidebarBorder/10 shadow-sm overflow-hidden">
-          <div className="flex justify-center border-b border-gray-100 overflow-x-auto bg-gray-50 w-full">
+          <div className="flex justify-center border-b border-Slate100 overflow-x-auto bg-Slate50 w-full">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
@@ -1560,7 +1560,7 @@ export const PenjualanDetailPage: React.FC = () => {
                   "flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap",
                   activeTab === tab.key 
                     ? "border-ColorPrimary text-ColorPrimary bg-white" 
-                    : "border-transparent text-TextColorBase opacity-60 hover:opacity-100 hover:bg-gray-100"
+                    : "border-transparent text-TextColorBase opacity-60 hover:opacity-100 hover:bg-Slate100"
                 )}
               >
                 {tab.label}
@@ -1866,7 +1866,7 @@ export const PenjualanDetailPage: React.FC = () => {
                       <h1 className="text-3xl font-extrabold text-[#D4AF37] uppercase tracking-wide">
                         {appAssets.Company}
                       </h1>
-                      <p className="text-sm text-gray-800 break-words max-w-sm">
+                      <p className="text-sm text-Slate800 break-words max-w-sm">
                         {appAssets.Alamat}
                       </p>
                     </div>
@@ -1882,7 +1882,7 @@ export const PenjualanDetailPage: React.FC = () => {
                     <div className="w-[50%] text-left space-y-1">
                       <p className="font-bold">Kepada</p>
                       <p className="font-bold">Tn/Ny. {data.customer_name}</p>
-                      <p className="font-semibold text-gray-700">{data.customer_company || '-'}</p>
+                      <p className="font-semibold text-Slate700">{data.customer_company || '-'}</p>
                       <p>{data.customer_address || '-'}</p>
                       <p><span className="underline">Telp</span> {data.customer_phone || '-'}</p>
                     </div>
@@ -1903,50 +1903,50 @@ export const PenjualanDetailPage: React.FC = () => {
                   </div>
 
                   {/* Items Table */}
-                  <table className="w-full border-collapse border border-gray-800 mb-6 text-sm">
-                    <thead className="bg-gray-100">
-                      <tr className="border-b border-gray-800 text-center">
-                        <th className="border-r border-gray-800 p-2.5 font-bold w-1/2 uppercase tracking-wider text-xs">Nama Barang</th>
-                        <th className="border-r border-gray-800 p-2.5 font-bold w-1/4 uppercase tracking-wider text-xs">Jumlah</th>
+                  <table className="w-full border-collapse border border-Slate800 mb-6 text-sm">
+                    <thead className="bg-Slate100">
+                      <tr className="border-b border-Slate800 text-center">
+                        <th className="border-r border-Slate800 p-2.5 font-bold w-1/2 uppercase tracking-wider text-xs">Nama Barang</th>
+                        <th className="border-r border-Slate800 p-2.5 font-bold w-1/4 uppercase tracking-wider text-xs">Jumlah</th>
                         <th className="p-2.5 font-bold w-1/4 uppercase tracking-wider text-xs">Harga</th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.items?.map((item, idx) => (
-                        <tr key={idx} className="border-b border-gray-800 text-center hover:bg-gray-50">
-                          <td className="border-r border-gray-800 p-2.5 text-left">{item.name}</td>
-                          <td className="border-r border-gray-800 p-2.5">{item.qty} {item.unit}</td>
+                        <tr key={idx} className="border-b border-Slate800 text-center hover:bg-Slate50">
+                          <td className="border-r border-Slate800 p-2.5 text-left">{item.name}</td>
+                          <td className="border-r border-Slate800 p-2.5">{item.qty} {item.unit}</td>
                           <td className="p-2.5 text-right">Rp {(item.total_selling_price || 0).toLocaleString('id-ID')}</td>
                         </tr>
                       ))}
                       {!data.items?.length && (
                         <tr>
-                          <td colSpan={3} className="p-4 text-center text-gray-500 italic">Belum ada barang</td>
+                          <td colSpan={3} className="p-4 text-center text-Slate500 italic">Belum ada barang</td>
                         </tr>
                       )}
                     </tbody>
                   </table>
 
                   {/* Costs Table */}
-                  <table className="w-full border-collapse border border-gray-800 mb-6 text-sm">
-                    <thead className="bg-gray-100">
-                      <tr className="border-b border-gray-800 text-center">
-                        <th className="border-r border-gray-800 p-2.5 font-bold w-[30%] uppercase tracking-wider text-xs">Nama Biaya Tambahan</th>
-                        <th className="border-r border-gray-800 p-2.5 font-bold w-[45%] uppercase tracking-wider text-xs">Keterangan</th>
+                  <table className="w-full border-collapse border border-Slate800 mb-6 text-sm">
+                    <thead className="bg-Slate100">
+                      <tr className="border-b border-Slate800 text-center">
+                        <th className="border-r border-Slate800 p-2.5 font-bold w-[30%] uppercase tracking-wider text-xs">Nama Biaya Tambahan</th>
+                        <th className="border-r border-Slate800 p-2.5 font-bold w-[45%] uppercase tracking-wider text-xs">Keterangan</th>
                         <th className="p-2.5 font-bold w-[25%] uppercase tracking-wider text-xs">Nominal</th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.costs?.map((cost, idx) => (
-                        <tr key={idx} className="border-b border-gray-800 text-center hover:bg-gray-50">
-                          <td className="border-r border-gray-800 p-2.5 text-left">{cost.nama_biaya}</td>
-                          <td className="border-r border-gray-800 p-2 text-left text-[0.6875rem] italic text-gray-600">{cost.keterangan || '-'}</td>
+                        <tr key={idx} className="border-b border-Slate800 text-center hover:bg-Slate50">
+                          <td className="border-r border-Slate800 p-2.5 text-left">{cost.nama_biaya}</td>
+                          <td className="border-r border-Slate800 p-2 text-left text-[0.6875rem] italic text-Slate600">{cost.keterangan || '-'}</td>
                           <td className="p-2.5 text-right">Rp {(cost.nominal || 0).toLocaleString('id-ID')}</td>
                         </tr>
                       ))}
                       {!data.costs?.length && (
                         <tr>
-                          <td colSpan={3} className="p-4 text-center text-gray-500 italic">Tidak ada biaya tambahan</td>
+                          <td colSpan={3} className="p-4 text-center text-Slate500 italic">Tidak ada biaya tambahan</td>
                         </tr>
                       )}
                     </tbody>
@@ -1956,8 +1956,8 @@ export const PenjualanDetailPage: React.FC = () => {
                   <div className="break-inside-avoid mb-6">
                     <div className="flex justify-between items-start text-sm gap-8">
                       {/* Payment Info */}
-                      <div className="w-1/2 border border-gray-800 p-4 rounded-sm bg-gray-50/50 hidden print:block border-dashed">
-                        <h3 className="font-bold font-sans mb-3 text-[0.6875rem] uppercase tracking-wider border-b border-gray-300 pb-2">Informasi Pembayaran</h3>
+                      <div className="w-1/2 border border-Slate800 p-4 rounded-sm bg-Slate50/50 hidden print:block border-dashed">
+                        <h3 className="font-bold font-sans mb-3 text-[0.6875rem] uppercase tracking-wider border-b border-Slate300 pb-2">Informasi Pembayaran</h3>
                         <table className="w-full text-left text-xs">
                           <tbody>
                             <tr>
@@ -1978,15 +1978,15 @@ export const PenjualanDetailPage: React.FC = () => {
                             </tr>
                             {data.payment_type === 'Tempo' && (
                               <tr>
-                                <td className="py-1 font-bold text-gray-800">Batas Max (SLA)</td>
-                                <td className="py-1 text-gray-800 font-bold">: {data.sla_date ? new Date(data.sla_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</td>
+                                <td className="py-1 font-bold text-Slate800">Batas Max (SLA)</td>
+                                <td className="py-1 text-Slate800 font-bold">: {data.sla_date ? new Date(data.sla_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</td>
                               </tr>
                             )}
                           </tbody>
                         </table>
                       </div>
-                      <div className="w-1/2 border border-gray-800 p-4 rounded-sm bg-gray-50/50 print:hidden block border-dashed">
-                        <h3 className="font-bold font-sans mb-3 text-[0.6875rem] uppercase tracking-wider border-b border-gray-300 pb-2">Informasi Pembayaran</h3>
+                      <div className="w-1/2 border border-Slate800 p-4 rounded-sm bg-Slate50/50 print:hidden block border-dashed">
+                        <h3 className="font-bold font-sans mb-3 text-[0.6875rem] uppercase tracking-wider border-b border-Slate300 pb-2">Informasi Pembayaran</h3>
                         <table className="w-full text-left text-xs">
                           <tbody>
                             <tr>
@@ -2007,8 +2007,8 @@ export const PenjualanDetailPage: React.FC = () => {
                             </tr>
                             {data.payment_type === 'Tempo' && (
                               <tr>
-                                <td className="py-1 font-bold text-gray-800">Batas Max (SLA)</td>
-                                <td className="py-1 text-gray-800 font-bold">: {data.sla_date ? new Date(data.sla_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</td>
+                                <td className="py-1 font-bold text-Slate800">Batas Max (SLA)</td>
+                                <td className="py-1 text-Slate800 font-bold">: {data.sla_date ? new Date(data.sla_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</td>
                               </tr>
                             )}
                           </tbody>
@@ -2016,22 +2016,22 @@ export const PenjualanDetailPage: React.FC = () => {
                       </div>
 
                       {/* Summary Totals */}
-                      <table className="w-1/2 border-collapse border border-gray-800 text-right h-fit">
+                      <table className="w-1/2 border-collapse border border-Slate800 text-right h-fit">
                         <tbody>
-                          <tr className="border-b border-gray-800">
-                            <td className="p-2.5 font-bold border-r border-gray-800 w-[50%] text-left bg-gray-50 text-[0.8125rem]">Tagihan</td>
+                          <tr className="border-b border-Slate800">
+                            <td className="p-2.5 font-bold border-r border-Slate800 w-[50%] text-left bg-Slate50 text-[0.8125rem]">Tagihan</td>
                             <td className="p-2.5 text-[0.8125rem]">Rp {((data.sum_product_price || 0) + (data.sum_added_cost || 0)).toLocaleString('id-ID')}</td>
                           </tr>
-                          <tr className="border-b border-gray-800">
-                            <td className="p-2.5 font-bold border-r border-gray-800 text-left bg-gray-50 text-gray-700 text-[0.8125rem]">Diskon</td>
-                            <td className="p-2.5 text-gray-700 font-medium text-[0.8125rem]">- Rp {(data.discount_amount || 0).toLocaleString('id-ID')}</td>
+                          <tr className="border-b border-Slate800">
+                            <td className="p-2.5 font-bold border-r border-Slate800 text-left bg-Slate50 text-Slate700 text-[0.8125rem]">Diskon</td>
+                            <td className="p-2.5 text-Slate700 font-medium text-[0.8125rem]">- Rp {(data.discount_amount || 0).toLocaleString('id-ID')}</td>
                           </tr>
-                          <tr className="border-b border-gray-800">
-                            <td className="p-2.5 font-bold border-r border-gray-800 text-left bg-gray-50 text-gray-700 text-[0.8125rem]">Grand Total</td>
-                            <td className="p-2.5 text-gray-700 font-medium text-[0.8125rem]">Rp {(data.grand_total || 0).toLocaleString('id-ID')}</td>
+                          <tr className="border-b border-Slate800">
+                            <td className="p-2.5 font-bold border-r border-Slate800 text-left bg-Slate50 text-Slate700 text-[0.8125rem]">Grand Total</td>
+                            <td className="p-2.5 text-Slate700 font-medium text-[0.8125rem]">Rp {(data.grand_total || 0).toLocaleString('id-ID')}</td>
                           </tr>
-                          <tr className="bg-gray-100">
-                            <td className="p-3 font-bold border-r border-gray-800 text-left text-sm uppercase tracking-wider">Total Tagihan</td>
+                          <tr className="bg-Slate100">
+                            <td className="p-3 font-bold border-r border-Slate800 text-left text-sm uppercase tracking-wider">Total Tagihan</td>
                             <td className="p-3 font-black text-sm">Rp {(data.payment_type === 'Tempo' ? (data.deposit || 0) : (data.grand_total || 0)).toLocaleString('id-ID')}</td>
                           </tr>
                         </tbody>
