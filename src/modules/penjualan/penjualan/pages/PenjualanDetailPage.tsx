@@ -220,11 +220,11 @@ const suppressOklchWarnings = () => {
 };
 
 // Helper to safely get signature image URL
-// Tigris natively supports CORS, so we can use the direct URL to prevent Vercel 500 proxy errors
+// We append nocache to bypass the browser's non-CORS cache when loading in html2canvas
 const getProxyImageUrl = (url?: string | null) => {
   if (!url) return undefined;
   if (url.startsWith('data:')) return url;
-  return url;
+  return `${url}${url.includes('?') ? '&' : '?'}nocache=${Date.now()}`;
 };
 
 interface InvoiceTemplateProps {
