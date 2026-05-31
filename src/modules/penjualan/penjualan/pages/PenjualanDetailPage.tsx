@@ -402,7 +402,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
                   {/* DevBrand Logo on its own row */}
                   {appAssets.devBrand && (
                     <div className="mb-4">
-                      <img src={appAssets.devBrand} alt="Brand" className="h-8 w-auto object-contain" referrerPolicy="no-referrer" crossOrigin="anonymous" />
+                      <img src={appAssets.devBrand} alt="Brand" className="h-8 w-auto object-contain" />
                     </div>
                   )}
                   <div className="flex justify-between items-start">
@@ -650,13 +650,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
 
   const handleDownload = async () => {
     setIsGenerating(true);
-    const restoreConsole = suppressOklchWarnings();
     try {
-      // Ensure Google Web Fonts are fully loaded before capturing
-      if (document.fonts) {
-        await document.fonts.ready;
-      }
-
       const element = document.getElementById('preview-invoice-paper');
       if (!element) {
         toast.error('Gagal menemukan elemen invoice');
@@ -733,20 +727,13 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
       console.error(err);
       toast.error('Gagal mengunduh PDF');
     } finally {
-      restoreConsole();
       setIsGenerating(false);
     }
   };
 
   const handlePrint = async () => {
     setIsGenerating(true);
-    const restoreConsole = suppressOklchWarnings();
     try {
-      // Ensure Google Web Fonts are fully loaded before capturing
-      if (document.fonts) {
-        await document.fonts.ready;
-      }
-
       const element = document.getElementById('preview-invoice-paper');
       if (!element) {
         toast.error('Gagal menemukan elemen invoice');
@@ -939,7 +926,6 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
       console.error(err);
       toast.error('Gagal memproses cetak');
     } finally {
-      restoreConsole();
       setIsGenerating(false);
     }
   };
@@ -1143,7 +1129,6 @@ export const PenjualanDetailPage: React.FC = () => {
           parentElement.style.width = '1200px';
           parentElement.style.display = 'block';
           
-          const restoreConsole = suppressOklchWarnings();
           try {
             const canvas = await html2canvas(element, { 
               scale: 2,
@@ -1215,7 +1200,6 @@ export const PenjualanDetailPage: React.FC = () => {
             console.error("Failed to generate PDF automatically: ", pdfErr);
             // Non-blocking error, allow approval to continue
           } finally {
-            restoreConsole();
             parentElement.classList.add('hidden');
             parentElement.style.position = '';
             parentElement.style.top = '';
@@ -1874,7 +1858,7 @@ export const PenjualanDetailPage: React.FC = () => {
                   {/* Header */}
                   {appAssets.devBrand && (
                     <div className="mb-4 text-left">
-                      <img src={appAssets.devBrand} alt="Brand" className="h-10 w-auto object-contain" referrerPolicy="no-referrer" crossOrigin="anonymous" />
+                      <img src={appAssets.devBrand} alt="Brand" className="h-10 w-auto object-contain" />
                     </div>
                   )}
                   <div className="flex justify-between items-start mb-8">
@@ -2061,7 +2045,7 @@ export const PenjualanDetailPage: React.FC = () => {
                       <p className="mb-2">Hormat Kami,</p>
                       <div className="h-20 mb-2 mt-2 relative flex justify-center items-center overflow-hidden">
                         {(signatureData || data.approval_signature_url) && (
-                          <img src={signatureData || getProxyImageUrl(data.approval_signature_url)} alt="Signature" className="max-h-full max-w-full object-contain" referrerPolicy="no-referrer" crossOrigin="anonymous" />
+                          <img src={signatureData || getProxyImageUrl(data.approval_signature_url)} alt="Signature" className="max-h-full max-w-full object-contain" />
                         )}
                       </div>
                       <p className="font-bold border-b border-black mb-1">{data.approver_name || '______________'}</p>

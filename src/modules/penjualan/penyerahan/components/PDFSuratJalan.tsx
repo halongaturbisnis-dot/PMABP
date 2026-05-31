@@ -133,7 +133,7 @@ export const SuratJalanTemplate: React.FC<PDFSuratJalanProps> = ({ data, id = "s
                 {/* DevBrand Logo on its own row */}
                 {appAssets.devBrand && (
                   <div className="mb-4">
-                    <img src={appAssets.devBrand} alt="Brand" className="h-8 w-auto object-contain" referrerPolicy="no-referrer" crossOrigin="anonymous" />
+                    <img src={appAssets.devBrand} alt="Brand" className="h-8 w-auto object-contain" />
                   </div>
                 )}
                 <div className="flex justify-between items-start">
@@ -317,7 +317,6 @@ export const SuratJalanPreviewModal: React.FC<{
   const handleDownload = async () => {
     setIsGenerating(true);
     try {
-      if (document.fonts) await document.fonts.ready;
       const element = document.getElementById('preview-sj-paper');
       if (!element) return;
       
@@ -352,7 +351,6 @@ export const SuratJalanPreviewModal: React.FC<{
   const handlePrint = async () => {
     setIsGenerating(true);
     try {
-      if (document.fonts) await document.fonts.ready;
       const element = document.getElementById('preview-sj-paper');
       if (!element) return;
       
