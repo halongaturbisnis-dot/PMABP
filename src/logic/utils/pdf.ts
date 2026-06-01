@@ -1,194 +1,57 @@
-import html2canvas from 'html2canvas';
+import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { tokens } from '../../ui/styles/tokens';
 
 export const safeHtml2Canvas = async (element: HTMLElement, options: any = {}): Promise<HTMLCanvasElement> => {
-  const activeRestorers: (() => void)[] = [];
-
-  const oklchToRgb = (l: number, c: number, h: number, a: number = 1): string => {
-    const hRad = (h * Math.PI) / 180;
-    const L = l;
-    const aVal = c * Math.cos(hRad);
-    const bVal = c * Math.sin(hRad);
-    
-    const l_ = L + 0.3963377774 * aVal + 0.2118028117 * bVal;
-    const m_ = L - 0.1055613458 * aVal - 0.0881400234 * bVal;
-    const s_ = L - 0.0894841775 * aVal - 1.2914855480 * bVal;
-    
-    const l3 = l_ * l_ * l_;
-    const m3 = m_ * m_ * m_;
-    const s3 = s_ * s_ * s_;
-    
-    const rL = +4.0767416621 * l3 - 3.3077115913 * m3 + 0.2309699292 * s3;
-    const gL = -1.2684380046 * l3 + 2.6097574011 * m3 - 0.3413193965 * s3;
-    const bL = -0.0041960863 * l3 - 0.7034186147 * m3 + 1.7076147010 * s3;
-    
-    const rVal = rL <= 0.0031308 ? 12.92 * rL : 1.055 * Math.pow(rL, 1 / 2.4) - 0.055;
-    const gVal = gL <= 0.0031308 ? 12.92 * gL : 1.055 * Math.pow(gL, 1 / 2.4) - 0.055;
-    const bVal2 = bL <= 0.0031308 ? 12.92 * bL : 1.055 * Math.pow(bL, 1 / 2.4) - 0.055;
-    
-    const R = Math.max(0, Math.min(255, Math.round(rVal * 255)));
-    const G = Math.max(0, Math.min(255, Math.round(gVal * 255)));
-    const B = Math.max(0, Math.min(255, Math.round(bVal2 * 255)));
-    
-    return `rgba(${R}, ${G}, ${B}, ${a})`;
-  };
-
-  const parseOklchAndReplace = (cssString: string): string => {
-    if (typeof cssString !== 'string') return cssString;
-    let res = cssString;
-    
-    res = res.replace(/oklch\(\s*([\d.]+%?)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+%?))?\s*\)/gi, (match, lStr, sChr, sHue, sAlpha) => {
-      try {
-        const l = lStr.endsWith('%') ? parseFloat(lStr) / 100 : parseFloat(lStr);
-        const c = parseFloat(sChr);
-        const h = parseFloat(sHue);
-        let a = 1;
-        if (sAlpha) {
-          a = sAlpha.endsWith('%') ? parseFloat(sAlpha) / 100 : parseFloat(sAlpha);
-        }
-        return oklchToRgb(l, c, h, a);
-      } catch (e) {
-        return 'rgba(71, 85, 105, 1)';
-      }
-    });
-
-    res = res.replace(/oklch\(\s*([\d.]+%?)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+%?))?\s*\)/gi, (match, lStr, sChr, sHue, sAlpha) => {
-      try {
-        const l = lStr.endsWith('%') ? parseFloat(lStr) / 100 : parseFloat(lStr);
-        const c = parseFloat(sChr);
-        const h = parseFloat(sHue);
-        let a = 1;
-        if (sAlpha) {
-          a = sAlpha.endsWith('%') ? parseFloat(sAlpha) / 100 : parseFloat(sAlpha);
-        }
-        return oklchToRgb(l, c, h, a);
-      } catch (e) {
-        return 'rgba(71, 85, 105, 1)';
-      }
-    });
-
-    res = res.replace(/oklch\([^)]+\)/gi, 'rgba(71, 85, 105, 1)');
-    res = res.replace(/(oklab|color-mix|display-p3|hwb)\([^)]+\)/gi, 'rgba(71, 85, 105, 1)');
-
-    return res;
-  };
-
-  // 1. Intercept CSSRule.prototype.cssText
-  const originalCssTextDescriptor = Object.getOwnPropertyDescriptor(CSSRule.prototype, 'cssText');
-  if (originalCssTextDescriptor && originalCssTextDescriptor.get) {
-    Object.defineProperty(CSSRule.prototype, 'cssText', {
-      get() {
-        const originalText = originalCssTextDescriptor.get!.call(this);
-        return typeof originalText === 'string' ? parseOklchAndReplace(originalText) : originalText;
-      },
-      configurable: true
-    });
-    activeRestorers.push(() => {
-      Object.defineProperty(CSSRule.prototype, 'cssText', originalCssTextDescriptor);
-    });
-  }
-
-  // 2. Intercept CSSStyleDeclaration.prototype.cssText
-  const originalDeclCssTextDescriptor = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'cssText');
-  if (originalDeclCssTextDescriptor && originalDeclCssTextDescriptor.get) {
-    Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', {
-      get() {
-        const originalText = originalDeclCssTextDescriptor.get!.call(this);
-        return typeof originalText === 'string' ? parseOklchAndReplace(originalText) : originalText;
-      },
-      configurable: true
-    });
-    activeRestorers.push(() => {
-      Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', originalDeclCssTextDescriptor);
-    });
-  }
-
-  // 3. Intercept CSSStyleDeclaration.prototype.getPropertyValue
-  const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
-  CSSStyleDeclaration.prototype.getPropertyValue = function(prop) {
-    const val = originalGetPropertyValue.call(this, prop);
-    return typeof val === 'string' ? parseOklchAndReplace(val) : val;
-  };
-  activeRestorers.push(() => {
-    CSSStyleDeclaration.prototype.getPropertyValue = originalGetPropertyValue;
-  });
-
-  // 4. Intercept style elements textContent in memory
-  const styleElements = Array.from(document.querySelectorAll('style'));
-  const originalContents = styleElements.map(el => el.textContent || '');
-  styleElements.forEach(el => {
-    if (el.textContent && /oklch/gi.test(el.textContent)) {
-      el.textContent = parseOklchAndReplace(el.textContent);
-    }
-  });
-  activeRestorers.push(() => {
-    styleElements.forEach((el, idx) => {
-      el.textContent = originalContents[idx];
-    });
-  });
-
-  // 5. Intercept common shorthand properties
-  const originalPropertyDescriptors: Record<string, PropertyDescriptor> = {};
-  const colorProps = ['color', 'backgroundColor', 'borderColor', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor', 'outlineColor', 'fill', 'stroke'];
-  colorProps.forEach(prop => {
-    const desc = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, prop);
-    if (desc && desc.get) {
-      originalPropertyDescriptors[prop] = desc;
-      Object.defineProperty(CSSStyleDeclaration.prototype, prop, {
-        get() {
-          const val = desc.get!.call(this);
-          return typeof val === 'string' ? parseOklchAndReplace(val) : val;
-        },
-        configurable: true
-      });
-    }
-  });
-  activeRestorers.push(() => {
-    Object.keys(originalPropertyDescriptors).forEach(prop => {
-      Object.defineProperty(CSSStyleDeclaration.prototype, prop, originalPropertyDescriptors[prop]);
-    });
-  });
-
-  const customOnClone = (clonedDoc: Document) => {
-    if (options.onclone) {
-      options.onclone(clonedDoc);
-    }
-
-    const colorRegex = /(oklch|oklab|color-mix|display-p3|hwb)\([^)]+\)/g;
-    const clonedStyles = clonedDoc.getElementsByTagName('style');
-    for (let j = 0; j < clonedStyles.length; j++) {
-      if (clonedStyles[j].innerHTML) {
-        clonedStyles[j].innerHTML = parseOklchAndReplace(clonedStyles[j].innerHTML);
-      }
-    }
-
-    const clonedElements = clonedDoc.getElementsByTagName('*');
-    for (let j = 0; j < clonedElements.length; j++) {
-      const el = clonedElements[j] as HTMLElement;
-      if (el.style && el.style.cssText) {
-        if (colorRegex.test(el.style.cssText)) {
-          el.style.cssText = parseOklchAndReplace(el.style.cssText);
-        }
-      }
-    }
-  };
-
-  const cleanOptions = {
-    ...options,
-    onclone: customOnClone
-  };
+  const { scale = 2.5, backgroundColor, onclone, ...rest } = options;
+  
+  // Clone the node in-memory
+  const clone = element.cloneNode(true) as HTMLElement;
+  
+  // Sembunyikan kloning agar tidak terlihat secara visual di layar tapi tetap ter-render di DOM
+  const offscreenContainer = document.createElement('div');
+  offscreenContainer.style.position = 'fixed';
+  offscreenContainer.style.top = '-10000px';
+  offscreenContainer.style.left = '-10000px';
+  offscreenContainer.style.width = element.offsetWidth ? `${element.offsetWidth}px` : '794px';
+  offscreenContainer.style.height = element.offsetHeight ? `${element.offsetHeight}px` : '1123px';
+  offscreenContainer.style.overflow = 'hidden';
+  offscreenContainer.appendChild(clone);
+  document.body.appendChild(offscreenContainer);
 
   try {
-    const res = await html2canvas(element, cleanOptions);
-    return res;
+    // Jalankan modifikasi kloning jika disediakan callback onclone
+    if (onclone) {
+      // Buat mock Document minimal agar callback onclone bawaan tetap berjalan mulus
+      const mockDoc = {
+        documentElement: clone,
+        body: clone,
+        getElementsByTagName: (tagName: string) => {
+          return clone.getElementsByTagName(tagName);
+        },
+        querySelectorAll: (selector: string) => {
+          return clone.querySelectorAll(selector);
+        },
+        getElementById: (id: string) => {
+          return clone.id === id ? clone : clone.querySelector(`#${id}`);
+        }
+      } as unknown as Document;
+      
+      onclone(mockDoc);
+    }
+
+    // Render kloning menggunakan html-to-image
+    const canvas = await toCanvas(clone, {
+      pixelRatio: scale,
+      backgroundColor: backgroundColor || '#ffffff',
+      ...rest
+    });
+    
+    return canvas;
   } finally {
-    for (let i = activeRestorers.length - 1; i >= 0; i--) {
-      try {
-        activeRestorers[i]();
-      } catch (e) {
-        console.warn("Failed to restore property interceptor: ", e);
-      }
+    // Pastikan kita selalu membersihkan DOM
+    if (document.body.contains(offscreenContainer)) {
+      document.body.removeChild(offscreenContainer);
     }
   }
 };
