@@ -68,13 +68,13 @@ export const pembelianService = {
 
     // Filter Rentang Tanggal
     if (options?.startDate && options?.endDate) {
-      whereConditions.push(`date(p.datetime) BETWEEN date(?) AND date(?)`);
+      whereConditions.push(`date(p.datetime) BETWEEN ? AND ?`);
       params.push(options.startDate, options.endDate);
     } else if (options?.startDate) {
-      whereConditions.push(`date(p.datetime) >= date(?)`);
+      whereConditions.push(`date(p.datetime) >= ?`);
       params.push(options.startDate);
     } else if (options?.endDate) {
-      whereConditions.push(`date(p.datetime) <= date(?)`);
+      whereConditions.push(`date(p.datetime) <= ?`);
       params.push(options.endDate);
     }
 

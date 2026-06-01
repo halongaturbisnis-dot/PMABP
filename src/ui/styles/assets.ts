@@ -8,13 +8,13 @@ export const appAssets = {
   
   // Developer/Brand Icon
   devBrand: 'https://lh3.googleusercontent.com/d/1czO2SWxIMEqVMKrwJnetuR_sOVV74bDt', // Contoh Icon User/Brand
-  AppName: 'PT Pangan Mas Abadi',
+  AppName: 'PT Pangan Emas Abadi',
   SubAppName: 'Business Portal',
   Branch: 'Cabang Magelang',
   Alamat: "Candimulyo Magelang",
-  DisplayName: "Pangan Mas Abadi",
+  DisplayName: "Pangan Emas Abadi",
 
-  Company: 'PT Pangan Mas Abadi',
+  Company: 'PT Pangan Emas Abadi',
 
   AccountPlaceholder: 'https://lh3.googleusercontent.com/d/1XSk1x0msLnTjWo-wzS2z1ibFJyQfOPSe',
 

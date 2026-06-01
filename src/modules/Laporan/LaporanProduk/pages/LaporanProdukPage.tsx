@@ -165,7 +165,7 @@ export const LaporanProdukPage: React.FC = () => {
         </div>
 
         {/* 3. Line Chart: Agregat Stok */}
-        <Card className="p-SpacingSmall flex flex-col gap-SpacingSmall">
+        {/*<Card className="p-SpacingSmall flex flex-col gap-SpacingSmall">
           <div className="flex flex-col gap-1">
             <h3 className="text-FontSizeSm font-bold text-TextColorBase">
               Agregat Pergerakan Stok
@@ -187,7 +187,7 @@ export const LaporanProdukPage: React.FC = () => {
                 ]}
               />
           </div>
-        </Card>
+        </Card>*/}
 
         {/* 5. Composed Chart: Suplier (Frekuensi vs Total QTY) */}
         <Card className="p-SpacingSmall flex flex-col gap-SpacingSmall">

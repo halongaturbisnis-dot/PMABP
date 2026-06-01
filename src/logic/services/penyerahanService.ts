@@ -68,13 +68,13 @@ export const penyerahanService = {
     const dateField = options?.status === TPenyerahanStatus.COMPLETED ? 'p.handover_datetime' : 'p.datetime';
 
     if (options?.startDate) {
-      whereConditions.push(`${dateField} >= ?`);
-      params.push(`${options.startDate} 00:00:00`);
+      whereConditions.push(`date(${dateField}) >= ?`);
+      params.push(options.startDate);
     }
 
     if (options?.endDate) {
-      whereConditions.push(`${dateField} <= ?`);
-      params.push(`${options.endDate} 23:59:59`);
+      whereConditions.push(`date(${dateField}) <= ?`);
+      params.push(options.endDate);
     }
 
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
@@ -144,13 +144,13 @@ export const penyerahanService = {
     }
 
     if (options?.startDate) {
-      whereConditions.push(`pj.datetime >= ?`);
-      params.push(`${options.startDate} 00:00:00`);
+      whereConditions.push(`date(pj.datetime) >= ?`);
+      params.push(options.startDate);
     }
 
     if (options?.endDate) {
-      whereConditions.push(`pj.datetime <= ?`);
-      params.push(`${options.endDate} 23:59:59`);
+      whereConditions.push(`date(pj.datetime) <= ?`);
+      params.push(options.endDate);
     }
 
     const whereClause = `WHERE ${whereConditions.join(' AND ')}`;

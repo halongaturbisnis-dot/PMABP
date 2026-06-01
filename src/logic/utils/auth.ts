@@ -1,4 +1,5 @@
 import { IAkunSession, TPeran } from '../types/ITs_Akun';
+import { MENU_ITEMS } from '../constants/menu';
 
 /**
  * Utility to check if a user can access a specific menu or path.
@@ -162,4 +163,34 @@ export const isPathAllowed = (user: IAkunSession | null, path: string): boolean 
   }
 
   return true; // Default allow for other paths like sample? maybe not.
+};
+
+/**
+ * Finds the first allowed route based on user roles and permissions.
+ */
+export const getDefaultRoute = (user: IAkunSession | null): string => {
+  if (!user) return '/login';
+  if (user.user_id === 'spadmin') return '/';
+
+  for (const item of MENU_ITEMS) {
+    // Basic menu item check
+    if (item.path && canAccessMenu(user, item.label)) {
+      // Specifically avoid Pemasaran Global if current item is Pemasaran with /pemasaran path
+      if (item.label === 'Pemasaran' && item.path === '/pemasaran' && user.peran === TPeran.USER) {
+        continue;
+      }
+      return item.path;
+    }
+
+    // Sub-menu check
+    if (item.subMenu) {
+      for (const sub of item.subMenu) {
+        if (canAccessMenu(user, item.label, sub.label)) {
+          return sub.path;
+        }
+      }
+    }
+  }
+
+  return '/';
 };

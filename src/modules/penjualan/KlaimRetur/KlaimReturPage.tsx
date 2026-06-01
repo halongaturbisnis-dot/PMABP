@@ -192,8 +192,8 @@ export const KlaimReturPage: React.FC = () => {
           </div>
           
           {/* Right: DateRangePicker & Create Button */}
-          <div className={cn("flex items-center gap-SpacingSmall", isMobile ? "flex-col items-stretch gap-2" : "ml-auto flex-shrink-0")}>
-            <div className={cn(isMobile ? "w-full" : "w-64")}>
+          <div className={cn("flex flex-1 items-center gap-[0.75rem]", !isMobile && "justify-end")}>
+            <div className={cn(isMobile ? "w-full" : "w-auto min-w-[200px]")}>
               <DateRangePicker
                 date={dateRange}
                 onDateChange={handleDateRangeChange}

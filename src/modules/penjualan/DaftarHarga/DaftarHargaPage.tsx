@@ -33,6 +33,7 @@ export const DaftarHargaPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('unset'); // 'unset' | 'catalog'
   const [unsetItems, setUnsetItems] = useState<IStokBerjalan[]>([]);
   const [catalogItems, setCatalogItems] = useState<IDaftarHarga[]>([]);
+  const [skuToPriceMap, setSkuToPriceMap] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
@@ -51,11 +52,15 @@ export const DaftarHargaPage: React.FC = () => {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
+      const allStock = await stokBerjalanService.getAll();
+      const priceMap: Record<string, number> = {};
+      allStock.forEach(item => {
+        priceMap[item.sku] = item.base_price || 0;
+      });
+      setSkuToPriceMap(priceMap);
+
       if (activeTab === 'unset') {
-        const [allStock, currentCatalog] = await Promise.all([
-          stokBerjalanService.getAll(),
-          daftarHargaService.getAll()
-        ]);
+        const currentCatalog = await daftarHargaService.getAll();
         
         // Filter SKU yang belum ada di katalog
         const catalogSkus = new Set(currentCatalog.map(c => c.sku));
@@ -225,6 +230,9 @@ export const DaftarHargaPage: React.FC = () => {
               >
                 Satuan
               </TableHead>
+              <TableHead>
+                Harga Satuan
+              </TableHead>
               {activeTab === 'catalog' && (
                 <>
                   <TableHead 
@@ -243,6 +251,7 @@ export const DaftarHargaPage: React.FC = () => {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, idx) => (
                 <TableRow key={`skeleton-${idx}`} noBorder={true}>
+                  <TableCell noBorder={true}><Skeleton className="h-[2rem] w-full" /></TableCell>
                   <TableCell noBorder={true}><Skeleton className="h-[2rem] w-full" /></TableCell>
                   <TableCell noBorder={true}><Skeleton className="h-[2rem] w-full" /></TableCell>
                   <TableCell noBorder={true}><Skeleton className="h-[2rem] w-full" /></TableCell>
@@ -285,10 +294,13 @@ export const DaftarHargaPage: React.FC = () => {
                   <TableCell noBorder={true} className="!text-FontSizeXs">
                     <span className="text-FontSizeXs text-TextColorMuted font-medium">{item.unit}</span>
                   </TableCell>
+                  <TableCell noBorder={true} className="!text-FontSizeXs">
+                    <span className="text-FontSizeXs text-TextColorBase">{formatCurrency(item.base_price || 0)}</span>
+                  </TableCell>
                 </TableRow>
               )) : (
                 <TableRow noBorder={true}>
-                  <TableCell colSpan={5} noBorder={true} className="h-[12rem] text-TextColorMuted italic text-center text-FontSizeXs">
+                  <TableCell colSpan={6} noBorder={true} className="h-[12rem] text-TextColorMuted italic text-center text-FontSizeXs">
                     Semua produk sudah memiliki katalog harga
                   </TableCell>
                 </TableRow>
@@ -324,6 +336,9 @@ export const DaftarHargaPage: React.FC = () => {
                     </TableCell>
                     <TableCell noBorder={true} className="!text-FontSizeXs">
                       <span className="text-FontSizeXs text-TextColorMuted font-medium">{item.unit}</span>
+                    </TableCell>
+                    <TableCell noBorder={true} className="!text-FontSizeXs">
+                      <span className="text-FontSizeXs text-TextColorBase">{formatCurrency(skuToPriceMap[item.sku] || 0)}</span>
                     </TableCell>
                     <TableCell noBorder={true} className="!text-FontSizeXs">
                       <div className="flex flex-col items-center">
@@ -367,7 +382,7 @@ export const DaftarHargaPage: React.FC = () => {
                 );
               }) : (
                 <TableRow noBorder={true}>
-                  <TableCell colSpan={7} noBorder={true} className="h-[12rem] text-TextColorMuted italic text-center text-FontSizeXs">
+                  <TableCell colSpan={8} noBorder={true} className="h-[12rem] text-TextColorMuted italic text-center text-FontSizeXs">
                     Belum ada katalog harga aktif
                   </TableCell>
                 </TableRow>

@@ -9,6 +9,7 @@ import { AlertCircle, LogIn } from 'lucide-react';
 import { cn } from '../../logic/utils/cn';
 import { appAssets } from '../../ui/styles/assets';
 import { APP_CONFIG } from '../../logic/constants/app';
+import { getDefaultRoute } from '../../logic/utils/auth';
 
 /**
  * LOGIN PAGE

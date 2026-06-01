@@ -4,6 +4,9 @@ import { MainShell } from '../../../ui/components/common/shells/MainShell';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '../../../ui/components/common/Table';
 import { Pagination } from '../../../ui/components/common/Pagination';
 import { Tabs } from '../../../ui/components/common/Tabs';
+import { DateRangePicker } from '../../../ui/components/elements/DateRangePicker';
+import { DateRange } from 'react-day-picker';
+import { formatDateLocal } from '../../../logic/utils/date';
 import { getPageFetchLimit } from '../../../logic/services/fetchingCenter';
 import { pemrosesanService } from '../../../logic/services/pemrosesanService';
 import { penerimaanService } from '../../../logic/services/penerimaanService';
@@ -26,6 +29,7 @@ export const PemrosesanPage: React.FC = () => {
   const { isMobile } = state.viewport;
   
   const [activeTab, setActiveTab] = useState('pending'); // 'pending' | 'processing' | 'completed'
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,14 +57,18 @@ export const PemrosesanPage: React.FC = () => {
           'processing': 'processing',
           'completed': 'completed'
         };
+
+        const startDate = dateRange?.from ? formatDateLocal(dateRange.from) : undefined;
+        const endDate = dateRange?.to ? formatDateLocal(dateRange.to) : (dateRange?.from ? formatDateLocal(dateRange.from) : undefined);
+
         const result = await pemrosesanService.getPaginated(page, {
           limit,
-          status: statusMap[activeTab]
+          status: statusMap[activeTab],
+          search: searchTerm,
+          startDate,
+          endDate
         });
         
-        // Filter search term (Jika service mendukung search ini lebih baik, tapi di sini kita simulasikan)
-        // Karena pemrosesanService.getPaginated belum mendukung search term, kita ambil semua dulu atau filter client-side 
-        // Untuk demo, kita gunakan data dari service
         setData(result.items);
         setTotalItems(result.total);
       }
@@ -69,7 +77,7 @@ export const PemrosesanPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [searchTerm, activeTab, page, limit]);
+  }, [searchTerm, activeTab, page, limit, dateRange]);
 
   useEffect(() => {
     fetchData();
@@ -77,7 +85,7 @@ export const PemrosesanPage: React.FC = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, activeTab]);
+  }, [searchTerm, activeTab, dateRange]);
 
   const handleStartProcess = async (row: any) => {
     const result = await swalConfig.fire({
@@ -158,6 +166,17 @@ export const PemrosesanPage: React.FC = () => {
           onChange={(id) => setActiveTab(String(id))}
           variant="underline"
         />
+
+        {activeTab === 'completed' && (
+          <div className={cn("w-full flex justify-end", isMobile && "justify-stretch")}>
+            <DateRangePicker 
+              date={dateRange}
+              onDateChange={setDateRange}
+              placeholder="Filter Waktu Selesai"
+              className="w-full md:w-auto"
+            />
+          </div>
+        )}
 
         <Table id="pemrosesan-table" noBorder={true}>
           <TableHeader>

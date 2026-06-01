@@ -6,8 +6,7 @@ Dokumen ini menjelaskan langkah-langkah untuk mengintegrasikan Tigris Storage se
 
 1. **Buat Bucket**: Buat bucket baru (contoh nama: `fakhri`).
 2. **Pengaturan Akses (Access and Sharing)**:
-   - Atur **Public / Private Access** menjadi **Public**.
-   - Matikan (OFF) **Allow Object ACL** (Tigris merekomendasikan penggunaan kebijakan bucket untuk publik).
+   - Atur **Public / Private Access** menjadi **Private** (Ketentuan terbaru Tigris seringkali mewajibkan Private Bucket).
    - Pastikan **Disable Directory Listing** aktif (ON) untuk keamanan folder.
 3. **Dapatkan Access Keys**:
    - Di tab **Access Keys**, buat key baru.
@@ -32,7 +31,8 @@ Buka menu **Settings** di Google AI Studio dan masukkan variabel berikut:
 Gunakan `@aws-sdk/client-s3` untuk berinteraksi dengan Tigris.
 
 ```typescript
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import type { Readable } from "stream";
 
 const s3Client = new S3Client({
   region: "auto",
@@ -45,23 +45,63 @@ const s3Client = new S3Client({
 });
 ```
 
-### Logika Upload dan Public URL
-Untuk bucket publik, format URL akses langsung adalah:
-`https://<nama-bucket>.t3.tigrisfiles.io/<key-file>`
+### Logika Upload dan Mengatasi Private Bucket (Proxying via Backend)
 
-Contoh implementasi upload:
+Karena kebijakan bucket bersifat Private, URL akses publik (`.t3.tigrisfiles.io`) tidak dapat langsung digunakan, dan file tidak bisa ditampilkan di tag `<img>` pada website/domain tanpa otentikasi.
+Oleh karena itu, solusinya adalah **menggunakan backend sebagai proxy**. URL file akan diarahkan ke endpoint API lokal, di mana backend mengambil object menggunakan identitas kredensial S3, lalu mem-pipe stream-nya langsung kepada client.
+
+#### A. Endpoint GET File (Proxy Stream)
+Buat route untuk membaca file dari Tigris:
+```typescript
+app.get("/api/images/:key", async (req, res) => {
+  try {
+    const { key } = req.params;
+    const bucketName = process.env.TIGRIS_STORAGE_BUCKET;
+
+    const response = await s3Client.send(new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    }));
+
+    // Teruskan metadata
+    if (response.ContentType) res.setHeader("Content-Type", response.ContentType);
+    if (response.ContentLength) res.setHeader("Content-Length", response.ContentLength);
+    
+    // Tambahkan header caching (opsional namun sangat disarankan agar loading image cepat)
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+
+    if (response.Body) {
+      // Pipe stream langsung ke res
+      (response.Body as Readable).pipe(res);
+    } else {
+      res.status(404).send("File tidak ditemukan");
+    }
+  } catch (error: any) {
+    if (error.name === "NoSuchKey") {
+      res.status(404).send("File tidak ditemukan");
+    } else {
+      console.error("Error fetching image:", error);
+      res.status(500).send("Gagal mengambil gambar");
+    }
+  }
+});
+```
+
+#### B. Logika Upload
+Ubah hasil response *imageUrl* saat upload agar mengembalikan URL proxy backend (contoh: `/api/images/...`).
 ```typescript
 await s3Client.send(new PutObjectCommand({
   Bucket: process.env.TIGRIS_STORAGE_BUCKET,
-  Key: `folder/${filename}`,
+  Key: filename,
   Body: fileBuffer,
-  ContentType: "application/pdf"
+  ContentType: "image/jpeg"
 }));
 
-const publicUrl = `https://${process.env.TIGRIS_STORAGE_BUCKET}.t3.tigrisfiles.io/folder/${filename}`;
+// Karena bucket Private, pakai URL proxy internal/backend yang kita buat di atas
+const imageUrl = `/api/images/${filename}`; 
 ```
 
 ## 4. Troubleshooting
-- **Access Denied**: Pastikan bucket diset ke **Public**.
-- **URL Tidak Bisa Dibuka**: Gunakan format subdomain `.t3.tigrisfiles.io` untuk akses langsung via browser.
-- **CORS Error**: Atur CORS di dashboard Tigris jika melakukan upload langsung dari browser (Client-side). Dalam panduan ini, upload dilakukan via Backend (Server-side) untuk keamanan.
+- **Bucket Harus Private**: Sesuai kebijakan terbaru Tigris, jika menggunakan bucket Private, Anda tidak bisa lagi langsung merujuk public URL `.t3.tigrisfiles.io`. Proxy file streaming seperti di atas adalah solusi yang tepat dan aman.
+- **Image Lama Tidak Muncul**: Pastikan database menyimpan path lokal (seperti `/api/images/...`) dan bukan domain asli tigris. Evaluasi URL yang tersimpan.
+- **Tipe Data Stream**: Jangan lupa casting `response.Body as Readable` di namespace server Node.js jika menggunakan TypeScript.

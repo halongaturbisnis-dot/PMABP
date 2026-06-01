@@ -13,16 +13,15 @@ export const laporanCustomerService = {
   /**
    * Get all customer report data
    */
-  async getCustomerReport(startDate?: string, endDate?: string): Promise<CustomerReportData | null> {
+  async getCustomerReport(): Promise<CustomerReportData | null> {
     try {
-      const dateFilter = startDate && endDate ? ` AND p.datetime BETWEEN '${startDate} 00:00:00' AND '${endDate} 23:59:59'` : '';
       
       // 1. Customers with at least 1 purchase
       const sqlPurchased = `
         SELECT c.*, COUNT(p.id) as total_trx 
         FROM customer c 
         JOIN penjualan p ON c.id = p.customer_id 
-        WHERE p.approval_status = 'Approved' ${dateFilter}
+        WHERE p.approval_status = 'Approved' 
         GROUP BY c.id 
         HAVING total_trx >= 1
         ORDER BY total_trx DESC
@@ -43,7 +42,7 @@ export const laporanCustomerService = {
         SELECT c.name, COUNT(p.id) as freq 
         FROM customer c 
         JOIN penjualan p ON c.id = p.customer_id 
-        WHERE p.approval_status = 'Approved' ${dateFilter}
+        WHERE p.approval_status = 'Approved' 
         GROUP BY c.id 
         ORDER BY freq DESC 
         LIMIT 5
@@ -54,7 +53,7 @@ export const laporanCustomerService = {
         SELECT c.name, SUM(p.sum_product_price) as total_nominal 
         FROM customer c 
         JOIN penjualan p ON c.id = p.customer_id 
-        WHERE p.approval_status = 'Approved' ${dateFilter}
+        WHERE p.approval_status = 'Approved' 
         GROUP BY c.id 
         ORDER BY total_nominal DESC 
         LIMIT 5

@@ -58,8 +58,12 @@ export interface LaporanProdukData {
 export const laporanProdukService = {
   async getProdukReport(startDate: string, endDate: string, timezone: string = 'Asia/Jakarta'): Promise<LaporanProdukData | null> {
     try {
-      const offset = getTimezoneOffsetString(); // e.g. '+07:00'
-      const dateFunc = (col: string) => `date(datetime(${col}, '${offset}'))`;
+      const offsetHours = timezone === 'Asia/Jakarta' ? 7 : 
+                         timezone === 'Asia/Makassar' ? 8 :
+                         timezone === 'Asia/Jayapura' ? 9 : 0;
+      const offset = `+${offsetHours} hours`;
+
+      const dateFunc = (col: string) => `date(${col}, '${offset}')`;
       const datetimeFunc = (col: string) => `datetime(${col}, '${offset}')`;
 
       // 0. Get list of products in stok_berjalan for Agregat filtering
@@ -91,11 +95,11 @@ export const laporanProdukService = {
 
       // 3. Data Pemrosesan (Penyusutan QC)
       const sqlPemrosesan = `
-        SELECT p.qty_penyusutan, ${datetimeFunc('p.created_at')} as created_at, pp.name as product_name
+        SELECT p.qty_penyusutan, ${datetimeFunc('COALESCE(p.updated_at, p.datetime)')} as created_at, pp.name as product_name
         FROM pemrosesan p
         JOIN pembelian_produk pp ON p.pembelian_produk_id = pp.id
-        WHERE ${dateFunc('p.created_at')} BETWEEN date(?) AND date(?)
-        AND p.status = 'completed'
+        WHERE ${dateFunc('COALESCE(p.updated_at, p.datetime)')} BETWEEN date(?) AND date(?)
+        AND (p.qty_penyusutan > 0 OR p.status = 'completed')
       `;
       const resPemrosesan = await dbClient.query(sqlPemrosesan, [startDate, endDate]);
       const pemrosesanData = resPemrosesan.rows as any[];
@@ -229,12 +233,10 @@ export const laporanProdukService = {
       
       const interval = eachDayOfInterval({ start: new Date(startDate), end: new Date(endDate) });
       
-      const toLocalDate = (dateStr: string) => {
-        if (!dateStr) return new Date(0);
-        // SQLite output is usually 'yyyy-MM-dd HH:mm:ss'
-        // We normalize it to be parsed correctly
-        const normalized = dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T');
-        return new Date(normalized); 
+      const toDateKey = (dateStr: string) => {
+        if (!dateStr) return '';
+        // SQLite shifted results are 'yyyy-MM-dd HH:mm:ss'
+        return dateStr.split(' ')[0];
       };
 
       const dailyFlowData: DailyFlow[] = [];
@@ -245,11 +247,12 @@ export const laporanProdukService = {
       let runningStock = initialBalance;
 
       interval.forEach(day => {
+        const dateKey = format(day, 'yyyy-MM-dd');
         const label = format(day, 'dd MMM', { locale: id });
         
         // Flow: Pembelian, Penerimaan, Reject, Selisih
-        const dayPembelian = pembelianData.filter(d => isSameDay(toLocalDate(d.created_at), day));
-        const dayPenerimaan = penerimaanData.filter(d => isSameDay(toLocalDate(d.created_at), day));
+        const dayPembelian = pembelianData.filter(d => toDateKey(d.created_at) === dateKey);
+        const dayPenerimaan = penerimaanData.filter(d => toDateKey(d.created_at) === dateKey);
         
         const sumPembelian = dayPembelian.reduce((acc, curr) => acc + (curr.qty || 0), 0);
         const sumPenerimaan = dayPenerimaan.reduce((acc, curr) => acc + (curr.qty_received_actual || 0), 0);
@@ -265,16 +268,16 @@ export const laporanProdukService = {
         });
 
         // QC:
-        const dayPemrosesan = pemrosesanData.filter(d => isSameDay(toLocalDate(d.created_at), day));
+        const dayPemrosesan = pemrosesanData.filter(d => toDateKey(d.created_at) === dateKey);
         const sumPenyusutan = dayPemrosesan.reduce((acc, curr) => acc + (curr.qty_penyusutan || 0), 0);
         qcData.push({ label, Penyusutan: sumPenyusutan });
 
         // Agregat: (HANYA PRODUK DI STOK BERJALAN)
-        const dayStokMasuk = stokMasukData.filter(d => isSameDay(toLocalDate(d.created_at), day));
-        const dayStokRetur = stokReturData.filter(d => isSameDay(toLocalDate(d.created_at), day));
-        const dayStokTerbuang = stokTerbuangData.filter(d => isSameDay(toLocalDate(d.created_at), day));
-        const dayPenjualan = allPenjualanData.filter(d => isSameDay(toLocalDate(d.created_at), day));
-        const dayOpname = opnameDataQuery.filter(d => isSameDay(toLocalDate(d.created_at), day));
+        const dayStokMasuk = stokMasukData.filter(d => toDateKey(d.created_at) === dateKey);
+        const dayStokRetur = stokReturData.filter(d => toDateKey(d.created_at) === dateKey);
+        const dayStokTerbuang = stokTerbuangData.filter(d => toDateKey(d.created_at) === dateKey);
+        const dayPenjualan = allPenjualanData.filter(d => toDateKey(d.created_at) === dateKey);
+        const dayOpname = opnameDataQuery.filter(d => toDateKey(d.created_at) === dateKey);
 
         const dayStokMasukAgregat = dayStokMasuk.filter(d => sbSkus.has(d.sku));
         const dayStokReturAgregat = dayStokRetur.filter(d => sbNames.has(d.name));

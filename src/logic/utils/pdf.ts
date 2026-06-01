@@ -44,8 +44,6 @@ export const safeHtml2Canvas = async (element: HTMLElement, options: any = {}): 
     const canvas = await toCanvas(clone, {
       pixelRatio: scale,
       backgroundColor: backgroundColor || '#ffffff',
-      skipFonts: true,
-      fontEmbedCSS: '',
       ...rest
     });
     

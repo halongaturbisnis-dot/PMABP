@@ -110,7 +110,7 @@ export const StokOpnameFormModal: React.FC<StokOpnameFormModalProps> = ({
 
     const confirm = await swalConfig.fire({
       title: 'Konfirmasi Stok Opname',
-      html: `Apakah Anda yakin ingin mencatat Stok Opname untuk <b>${runningStock?.name || formData.sku}</b>?<br/><br/>Pencatatan ini akan mengganti Stok Sistem saat ini (${formData.qty_system}) menjadi Stok Aktual (${formData.qty_actual}).<br/>Status: <b>${diffText}</b>.<br/><br/><span class="text-[0.75rem] text-[#b91c1c] font-bold">Pencatatan ini bersifat permanen dan tidak dapat diedit/dihapus.</span>`,
+      html: `Apakah Anda yakin ingin mencatat Stok Opname untuk <b>${runningStock?.name || formData.sku}</b>?<br/><br/><span class="text-[0.75rem] text-[#b91c1c] font-bold">Pencatatan ini bersifat permanen dan tidak dapat diedit/dihapus.</span>`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Ya, Catat Opname',
@@ -164,7 +164,7 @@ export const StokOpnameFormModal: React.FC<StokOpnameFormModalProps> = ({
     >
       <div className="flex flex-col gap-[1rem]">
         {/* Info Banner of Selected Product Stock */}
-        {runningStock && (
+        {/*{runningStock && (
           <div className="hidden bg-[#f0fdf4] p-[0.75rem] rounded-[0.75rem] border border-[#dcfce7] flex items-center justify-between text-TextColorBase">
             <div className="flex flex-col gap-[0.125rem]">
               <span className="text-[0.6875rem] text-[#166534] font-bold uppercase tracking-wider">
@@ -179,7 +179,7 @@ export const StokOpnameFormModal: React.FC<StokOpnameFormModalProps> = ({
               Kondisi Aktif
             </span>
           </div>
-        )}
+        )}*/}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-[1rem]">
           {/* Row 1: SKU & Nama Produk */}

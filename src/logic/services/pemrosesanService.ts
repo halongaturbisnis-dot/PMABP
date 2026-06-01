@@ -24,8 +24,11 @@ export const pemrosesanService = {
       pembelian_id?: string;
       pembelian_produk_id?: string;
       status?: ITs_Pemrosesan['status'];
+      search?: string;
       sortKey?: string;
       sortDir?: 'asc' | 'desc';
+      startDate?: string;
+      endDate?: string;
     }
   ): Promise<{ items: ITs_Pemrosesan[]; total: number }> {
     const fetchLimit = options?.limit || getPageFetchLimit('DaftarPemrosesan');
@@ -35,18 +38,58 @@ export const pemrosesanService = {
     const params: any[] = [];
 
     if (options?.pembelian_id) {
-      whereConditions.push(`pembelian_id = ?`);
+      whereConditions.push(`p.pembelian_id = ?`);
       params.push(options.pembelian_id);
     }
 
     if (options?.pembelian_produk_id) {
-      whereConditions.push(`pembelian_produk_id = ?`);
+      whereConditions.push(`p.pembelian_produk_id = ?`);
       params.push(options.pembelian_produk_id);
     }
 
     if (options?.status) {
-      whereConditions.push(`status = ?`);
+      whereConditions.push(`p.status = ?`);
       params.push(options.status);
+    }
+
+    if (options?.search) {
+      whereConditions.push(`(pp.name LIKE ? OR p.jenis_pemrosesan LIKE ? OR p.keterangan LIKE ?)`);
+      const s = `%${options.search}%`;
+      params.push(s, s, s);
+    }
+
+    if (options?.startDate) {
+      // Use updated_at for completed, otherwise datetime
+      const isUTCField = options.status === 'completed';
+      const dateField = isUTCField ? 'updated_at' : 'datetime';
+      
+      let startVal = `${options.startDate} 00:00:00`;
+      if (isUTCField) {
+        // Convert local date 00:00:00 to UTC ISO string for comparison
+        const localDate = new Date(`${options.startDate}T00:00:00`);
+        startVal = localDate.toISOString().replace('T', ' ').slice(0, 19);
+      }
+      
+      whereConditions.push(`p.${dateField} >= ?`);
+      params.push(startVal);
+    }
+
+    if (options?.endDate) {
+      const isUTCField = options.status === 'completed';
+      const dateField = isUTCField ? 'updated_at' : 'datetime';
+      
+      let endVal = `${options.endDate} 23:59:59`;
+      if (isUTCField) {
+        // Convert local date 23:59:59 to UTC ISO string for comparison
+        const localDate = new Date(`${options.endDate}T23:59:59`);
+        endVal = localDate.toISOString().slice(0, 10) === options.endDate ? localDate.toISOString().replace('T', ' ').slice(0, 19) : endVal;
+        // Re-calculate to be sure
+        const endD = new Date(`${options.endDate}T23:59:59`);
+        endVal = endD.toISOString().replace('T', ' ').slice(0, 19);
+      }
+      
+      whereConditions.push(`p.${dateField} <= ?`);
+      params.push(endVal);
     }
 
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';

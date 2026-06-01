@@ -7,7 +7,7 @@ import { Pagination } from '../../ui/components/common/Pagination';
 import { SearchInput } from '../../ui/components/elements/Inputs';
 import { DateRangePicker } from '../../ui/components/elements/DateRangePicker';
 import { DateRange } from 'react-day-picker';
-import { format } from 'date-fns';
+import { formatDateLocal } from '../../logic/utils/date';
 import { PrimaryButton } from '../../ui/components/elements/Button';
 import { Skeleton } from '../../ui/components/elements/Skeleton';
 import { StokOpnameFormModal } from './StokOpnameFormModal';
@@ -15,7 +15,7 @@ import { StokOpnameDetailModal } from './StokOpnameDetailModal';
 import { useDebounce } from '../../logic/hooks/useDebounce';
 import { cn } from '../../logic/utils/cn';
 import { useGlobalState } from '../../logic/context/GlobalContext';
-import { formatDate } from '../../logic/utils/date';
+import { formatDate, formatDateDisplay } from '../../logic/utils/date';
 import { History, Plus } from 'lucide-react';
 
 export const StokOpnamePage = () => {
@@ -38,12 +38,15 @@ export const StokOpnamePage = () => {
     setLoading(true);
     try {
       await stokOpnameService.initTable(); // Initialize table just in case
+      const startDate = dateRange?.from ? formatDateLocal(dateRange.from) : undefined;
+      const endDate = dateRange?.to ? formatDateLocal(dateRange.to) : (dateRange?.from ? formatDateLocal(dateRange.from) : undefined);
+      
       const res = await stokOpnameService.getPaginated(
         page, 
         limit, 
         debouncedSearch,
-        dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
-        dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined
+        startDate,
+        endDate
       );
       setData(res.items);
       setTotal(res.total);
@@ -89,8 +92,8 @@ export const StokOpnamePage = () => {
             />
           </div>
           
-          <div className={cn("flex items-center gap-SpacingSmall", isMobile ? "flex-col items-stretch gap-2" : "ml-auto flex-shrink-0")}>
-            <div className={cn(isMobile ? "w-full" : "w-64")}>
+          <div className={cn("flex flex-1 items-center gap-[0.75rem]", !isMobile && "justify-end")}>
+            <div className={cn(isMobile ? "w-full" : "w-auto min-w-[200px]")}>
               <DateRangePicker
                 date={dateRange}
                 onDateChange={handleDateRangeChange}
@@ -105,7 +108,7 @@ export const StokOpnamePage = () => {
                 setIsFormOpen(true);
               }}
               icon={<Plus size={16} />}
-              className="!rounded-RadiusMedium w-full sm:w-auto"
+              className="!rounded-RadiusMedium whitespace-nowrap"
             >
               Pencatatan Stok Opname
             </PrimaryButton>
@@ -150,10 +153,15 @@ export const StokOpnamePage = () => {
                     onClick={() => setSelectedId(row.id)}
                   >
                     <TableCell noBorder={true} className="!text-left px-[1rem]">
-                      <div className="flex flex-col">
-                        <span className="text-[0.875rem] font-bold text-[#1e3a34]">{formatDate(row.created_at || '')}</span>
-                        <span className="text-[0.7rem] text-[#64748b]">{row.created_at?.split(/[ T]/)[1]?.slice(0, 5) || ''}</span>
-                      </div>
+                      {(() => {
+                        const { date, time } = formatDateDisplay(row.created_at);
+                        return (
+                          <div className="flex flex-col">
+                            <span className="text-[0.875rem] font-bold text-[#1e3a34]">{date}</span>
+                            <span className="text-[0.7rem] text-[#64748b]">{time}</span>
+                          </div>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell noBorder={true} className="!text-left px-[1rem]">
                       <span className="text-[0.875rem] font-bold text-[#1e293b] ">

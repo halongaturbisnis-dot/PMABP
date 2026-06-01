@@ -212,7 +212,7 @@ export const AIChat: React.FC<AIChatProps> = ({ startDate, endDate }) => {
       <header className="p-4 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img src={appAssets.MaindiAI} alt="Maindi AI" className="w-8 h-8 object-contain" />
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-900">MAINDI CHAT</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-900">MAINDI ASSISTANT</span>
         </div>
         {chatHistory.length > 0 && (
           <button onClick={downloadSession} className="text-[#004691] hover:opacity-75"><Download size={14}/></button>

@@ -44,12 +44,12 @@ export const pengirimanService = {
 
     // Filter Tanggal
     if (options?.startDate) {
-      whereConditions.push(`s.datetime >= ?`);
-      params.push(`${options.startDate} 00:00:00`);
+      whereConditions.push(`date(s.datetime) >= ?`);
+      params.push(options.startDate);
     }
     if (options?.endDate) {
-      whereConditions.push(`s.datetime <= ?`);
-      params.push(`${options.endDate} 23:59:59`);
+      whereConditions.push(`date(s.datetime) <= ?`);
+      params.push(options.endDate);
     }
 
     // Filter Pencarian (PO number, Driver, atau Nopol)
@@ -160,12 +160,12 @@ export const pengirimanService = {
 
     // Filter Tanggal
     if (options?.startDate) {
-      whereConditions.push(`p.datetime >= ?`);
-      params.push(`${options.startDate} 00:00:00`);
+      whereConditions.push(`date(p.datetime) >= ?`);
+      params.push(options.startDate);
     }
     if (options?.endDate) {
-      whereConditions.push(`p.datetime <= ?`);
-      params.push(`${options.endDate} 23:59:59`);
+      whereConditions.push(`date(p.datetime) <= ?`);
+      params.push(options.endDate);
     }
 
     if (search) {

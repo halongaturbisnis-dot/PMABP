@@ -4,6 +4,9 @@ import { MainShell } from '../../../ui/components/common/shells/MainShell';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, SortDirection } from '../../../ui/components/common/Table';
 import { Pagination } from '../../../ui/components/common/Pagination';
 import { Tabs } from '../../../ui/components/common/Tabs';
+import { DateRangePicker } from '../../../ui/components/elements/DateRangePicker';
+import { DateRange } from 'react-day-picker';
+import { formatDateLocal } from '../../../logic/utils/date';
 import { getPageFetchLimit } from '../../../logic/services/fetchingCenter';
 import { penerimaanService } from '../../../logic/services/penerimaanService';
 import { ITs_Penerimaan } from '../../../logic/types/ITs_Penerimaan';
@@ -30,6 +33,7 @@ export const PenerimaanPage: React.FC = () => {
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: SortDirection }>({ 
     key: 'datetime', 
     direction: 'desc' 
@@ -54,23 +58,19 @@ export const PenerimaanPage: React.FC = () => {
         const offset = (page - 1) * limit;
         setData(filtered.slice(offset, offset + limit));
       } else {
-        const items = await penerimaanService.getReceived();
-        // Filter search term client-side for received
-        const filtered = items.filter(item => 
-          (item.nama_produk?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (item.kode_pembelian?.toLowerCase().includes(searchTerm.toLowerCase()))
-        );
-        setTotalItems(filtered.length);
-        // Client-side pagination
-        const offset = (page - 1) * limit;
-        setData(filtered.slice(offset, offset + limit));
+        const startDate = dateRange?.from ? formatDateLocal(dateRange.from) : undefined;
+        const endDate = dateRange?.to ? formatDateLocal(dateRange.to) : (dateRange?.from ? formatDateLocal(dateRange.from) : undefined);
+        
+        const result = await penerimaanService.getPaginated(page, limit, searchTerm, sortConfig.key, sortConfig.direction, startDate, endDate);
+        setData(result.items);
+        setTotalItems(result.total);
       }
     } catch (err) {
       console.error(err);
     } finally {
       setIsLoading(false);
     }
-  }, [searchTerm, activeTab, page, limit]);
+  }, [searchTerm, activeTab, page, limit, dateRange, sortConfig]);
 
   useEffect(() => {
     fetchData();
@@ -79,7 +79,7 @@ export const PenerimaanPage: React.FC = () => {
   // Reset ke halaman 1 jika mencari atau menyortir
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, sortConfig, activeTab]);
+  }, [searchTerm, sortConfig, activeTab, dateRange]);
 
   const tabs = [
     { id: 'pending', label: 'Belum Diterima' },
@@ -114,6 +114,17 @@ export const PenerimaanPage: React.FC = () => {
               className="bg-white !rounded-[0.75rem] !border-[#1e3a34]/25 hover:!border-[#1e3a34] focus:!border-[#1e3a34] focus-visible:!border-[#1e3a34] focus:!ring-0 focus-visible:!ring-0 transition-all shadow-sm"
             />
           </div>
+
+          {activeTab === 'received' && (
+            <div className={cn("flex-1", !isMobile && "flex justify-end")}>
+              <DateRangePicker 
+                date={dateRange}
+                onDateChange={setDateRange}
+                placeholder="Filter Waktu Diterima"
+                className="w-full md:w-auto"
+              />
+            </div>
+          )}
         </div>
 
         <Table id="penerimaan-table" noBorder={true}>

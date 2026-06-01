@@ -46,7 +46,7 @@ interface MenuItem {
 const MENU_ITEMS: MenuItem[] = [
 
   { icon: Signature, label: 'Persetujuan', path: '/persetujuan' },
-  { icon: Box, label: 'Sample', path: '/sample' },
+  /*{ icon: Box, label: 'Sample', path: '/sample' },*/
   
   { 
     icon: ShoppingCart, 
@@ -90,7 +90,7 @@ const MENU_ITEMS: MenuItem[] = [
       { label: 'Pengeluaran', path: '/finansial/pengeluaran' },
       { label: 'Piutang', path: '/finansial/piutang' },
       { label: 'Hutang', path: '/finansial/liabilitas' },
-      { label: 'Harga Stok', path: '/finansial/modal-stok' },
+      /*{ label: 'Harga Stok', path: '/finansial/modal-stok' },*/
       { label: 'Daftar Harga', path: '/penjualan/daftar-harga' }
     ]
   },
@@ -251,7 +251,7 @@ export const SidebarHidden: React.FC<SidebarHiddenProps> = ({ isCollapsed, setIs
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className={cn(
-          "flex flex-col h-full z-[100] select-none bg-[linear-gradient(120deg,#ffffff_33.3%,#4AC29A_75%,#BDFFF3_100%)]",
+          "flex flex-col h-full z-[100] select-none bg-White",
           isFloating ? "absolute left-0 top-0 bottom-0 shadow-[15px_0_30px_-5px_rgba(0,0,0,0.3)]" : "relative shadow-[10px_0_16px_-4px_rgba(0,0,0,0.25)]",
           isCollapsed ? "pointer-events-none shadow-none" : "pointer-events-auto rounded-r-[1.5rem]"
         )}
@@ -304,10 +304,10 @@ export const SidebarHidden: React.FC<SidebarHiddenProps> = ({ isCollapsed, setIs
               </div>
               
               <div className="flex flex-col">
-                <span className="font-bold text-FontSizeBase leading-tight text-[#1f2937] whitespace-nowrap">
+                <span className="font-bold text-FontSizeBase leading-tight text-ColorPrimary whitespace-nowrap">
                   {appAssets.DisplayName}
                 </span>
-                <span className="text-FontSizeNano font-semibold text-[#1e3a34]/60 tracking-widest uppercase mt-0.5 whitespace-nowrap">
+                <span className="text-FontSizeNano font-semibold text-Black/80 tracking-widest uppercase mt-0.5 whitespace-nowrap">
                   {appAssets.Branch}
                 </span>
               </div>
@@ -336,15 +336,32 @@ export const SidebarHidden: React.FC<SidebarHiddenProps> = ({ isCollapsed, setIs
                           navigate(item.path);
                         }
                       }}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all relative ${
-                        isActive && !hasSubMenu
-                          ? "bg-white text-[#1f2937] font-bold shadow-sm" 
-                          : "text-[#1f2937] font-semibold hover:bg-white/40 hover:text-[#000000]"
-                      }`}
+                      className={cn(
+                        "w-full flex items-center gap-3 p-3 rounded-xl transition-all relative group",
+                        
+                        // Text & Hover Colors
+                        isActive 
+                          ? "text-ColorSecondary font-bold" 
+                          : "text-[#1f2937] font-semibold hover:text-ColorSecondary hover:bg-white/40",
+                        
+                        // Background & Elevation
+                        isActive && !hasSubMenu && "bg-white shadow-sm",
+                        "hover:shadow-sm",
+
+                        // Elegant Shift Animation
+                        "hover:pl-4",
+
+                        // Underline Animation: Left to Right
+                        "before:content-[''] before:absolute before:bottom-0 before:left-0 before:h-[2px] before:bg-ColorSecondary before:transition-all before:duration-DurationMid before:ease-in-out",
+                        isActive ? "before:w-full" : "before:w-0 group-hover:before:w-full"
+                      )}
                     >
                       <item.icon 
                         size={20} 
-                        className="text-[#1f2937]" 
+                        className={cn(
+                          "transition-colors duration-DurationMid",
+                          isActive ? "text-ColorSecondary" : "text-[#1f2937]"
+                        )} 
                       />
                       
                       <span className="text-sm flex-1 text-left flex items-center gap-2">
@@ -369,7 +386,7 @@ export const SidebarHidden: React.FC<SidebarHiddenProps> = ({ isCollapsed, setIs
                         <motion.div
                           animate={{ rotate: isOpen ? 180 : 0 }}
                           transition={{ duration: 0.2 }}
-                          className="text-[#1e3a34]/60"
+                          className="text-[#1f2937]/60"
                         >
                           <ChevronDown size={16} />
                         </motion.div>
@@ -387,7 +404,7 @@ export const SidebarHidden: React.FC<SidebarHiddenProps> = ({ isCollapsed, setIs
                             transition={{ duration: 0.2 }}
                             className="relative pl-9 mt-1 space-y-1 overflow-hidden"
                           >
-                            <div className="absolute left-[23px] top-0 bottom-3 w-[1.5px] bg-[#1e3a34]/20" />
+                             <div className="absolute left-[23px] top-0 bottom-3 w-[1.5px] bg-[#1f2937]/20" />
 
                             {item.subMenu?.map((subItem, subIndex) => {
                               const isSubActive = location.pathname === subItem.path;
@@ -395,11 +412,21 @@ export const SidebarHidden: React.FC<SidebarHiddenProps> = ({ isCollapsed, setIs
                                 <li key={subIndex} className="relative">
                                   <button
                                     onClick={() => navigate(subItem.path)}
-                                    className={`w-full text-left py-2 px-3 text-sm rounded-lg transition-colors flex items-center justify-between relative ${
+                                    className={cn(
+                                      "w-full text-left py-2 px-3 text-sm rounded-lg flex items-center justify-between relative group transition-all duration-DurationMid",
+                                      
+                                      // Active & Hover State
                                       isSubActive 
-                                        ? "text-[#1f2937] font-bold bg-white/80 shadow-sm" 
-                                        : "text-[#1e3a34]/80 font-semibold hover:text-[#000000] hover:bg-white/30"
-                                    }`}
+                                        ? "text-ColorSecondary font-bold bg-white/80 shadow-sm" 
+                                        : "text-[#1f2937]/80 font-semibold hover:text-ColorSecondary hover:bg-white/40",
+
+                                      // Submenu Elegant Shift
+                                      "hover:pl-5",
+
+                                      // Smooth Underline for Submenu
+                                      "before:content-[''] before:absolute before:bottom-0 before:left-0 before:h-[1px] before:bg-ColorSecondary before:transition-all before:duration-DurationMid before:ease-in-out",
+                                      isSubActive ? "before:w-full" : "before:w-0 group-hover:before:w-full"
+                                    )}
                                   >
                                     <span>{subItem.label}</span>
                                     {subItem.label === 'Pembelian' && notifications.dropshipCount > 0 && (
@@ -432,10 +459,11 @@ export const SidebarHidden: React.FC<SidebarHiddenProps> = ({ isCollapsed, setIs
           <div className="p-3 shrink-0">
             <button
               onClick={() => authService.logout()}
-              className="w-full flex items-center gap-3 p-3 rounded-xl transition-all bg-transparent text-red-600 hover:text-red-700 hover:bg-red-500/10"
+              className="w-full flex items-center gap-3 p-3 rounded-xl transition-all bg-transparent text-red-600 hover:text-red-700 hover:bg-red-500/10 group relative"
             >
               <LogOut size={20} className="text-red-600" />
               <span className="text-sm font-bold">Keluar</span>
+              <span className="absolute bottom-1 left-0 h-[2px] w-0 bg-red-600 transition-all duration-DurationMid group-hover:w-full"></span>
             </button>
           </div>
         </motion.div>

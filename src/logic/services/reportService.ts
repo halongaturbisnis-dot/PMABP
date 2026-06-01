@@ -71,7 +71,16 @@ export const reportService = {
     try {
       // 1. Fetch Approved Sales in range with Customer name
       const sqlSales = `
-        SELECT p.*, c.name as customer_name
+        SELECT 
+          p.id, 
+          p.sales_id, p.sales_name, p.invoice_number, p.customer_id,
+          p.sum_product_price, p.sum_added_cost, p.discount_type, p.discount_value, p.discount_amount, p.grand_total,
+          p.payment_type, p.deposit, p.outstanding, p.sla_date,
+          p.payment_method, p.bank_cash_source_id, p.payment_proof_fileurls, p.keterangan, p.status, p.invoice_pdf_url,
+          p.approver_id, p.approver_name, p.approval_status, p.approval_signature_url, p.approval_at, p.approval_note,
+          p.created_at, p.created_by, p.created_timezone, p.updated_at, p.updated_by, p.updated_timezone,
+          p.datetime as datetime,
+          c.name as customer_name
         FROM penjualan p
         LEFT JOIN customer c ON p.customer_id = c.id
         WHERE p.approval_status = 'Approved'
@@ -99,14 +108,23 @@ export const reportService = {
 
       // 3. Fetch Piutang and Payments for the period
       const sqlPiutang = `
-        SELECT * FROM piutang 
-        WHERE date(datetime) BETWEEN date(?) AND date(?)
+        SELECT 
+          p.id, p.name, p.description, p.category, p.sales_id, p.entity_name,
+          p.principal_amount, p.paid_amount, p.outstanding_amount, p.due_date, p.status,
+          p.created_at, p.created_by, p.created_timezone, p.updated_at, p.updated_by, p.updated_timezone,
+          p.datetime as datetime
+        FROM piutang p
+        WHERE date(p.datetime) BETWEEN date(?) AND date(?)
       `;
       const piutangRes = await dbClient.query(sqlPiutang, [startDate, endDate]);
       const piutangs = piutangRes.rows as any[];
 
       const sqlPayments = `
-        SELECT pp.*, bac.nama_akun as bank_name 
+        SELECT 
+          pp.id, pp.piutang_id, pp.amount, pp.payment_method, pp.bank_and_cash_id, pp.income_id, pp.description, pp.proof_urls, pp.next_sla,
+          pp.created_at, pp.created_by, pp.created_timezone, pp.updated_at, pp.updated_by, pp.updated_timezone,
+          pp.payment_date as payment_date,
+          bac.nama_akun as bank_name 
         FROM piutang_pembayaran pp
         JOIN piutang p ON pp.piutang_id = p.id
         LEFT JOIN bank_and_cash bac ON pp.bank_and_cash_id = bac.id
@@ -118,7 +136,7 @@ export const reportService = {
 
       // 3.B Fetch Bank Names for Penjualan
       const sqlSalesWithBanks = `
-        SELECT p.*, bac.nama_akun as bank_name
+        SELECT p.payment_type, p.deposit, bac.nama_akun as bank_name
         FROM penjualan p
         LEFT JOIN bank_and_cash bac ON p.bank_cash_source_id = bac.id
         WHERE p.approval_status = 'Approved'
@@ -144,7 +162,9 @@ export const reportService = {
 
       // 3.D Fetch Klaim Retur daily data
       const sqlKlaim = `
-        SELECT datetime, sum_total_refund_nominal
+        SELECT 
+          datetime as datetime,
+          sum_total_refund_nominal
         FROM klaim_retur
         WHERE date(datetime) BETWEEN date(?) AND date(?)
         AND status != 'Rejected'

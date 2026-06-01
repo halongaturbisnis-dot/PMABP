@@ -34,11 +34,10 @@ export const storageService = {
         ContentType: finalFile.type,
       }));
 
-      // Generate the public URL (per TigrisGuide.md)
-      // Format: https://<nama-bucket>.t3.tigrisfiles.io/<key-file>
-      const publicUrl = `https://${config.tigris.bucket}.t3.tigrisfiles.io/${key}`;
+      // Because the bucket is Private, use the internal backend proxy URL
+      const imageUrl = `/api/images/${key}`;
       
-      return { url: publicUrl, key };
+      return { url: imageUrl, key };
     } catch (error) {
       console.error('[Storage Error] Upload failed:', error);
       throw error;

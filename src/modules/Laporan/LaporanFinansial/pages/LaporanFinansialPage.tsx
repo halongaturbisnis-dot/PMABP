@@ -455,11 +455,6 @@ export const LaporanFinansialPage: React.FC = () => {
             data.mutasiData.map((row) => {
               const isPemasukan = row.jenis === 'Pemasukan';
               
-              // Handle UTC to Local conversion as requested
-              const safeDateStr = row.transaction_date.includes('Z') || row.transaction_date.includes('+') 
-                ? row.transaction_date 
-                : row.transaction_date + 'Z';
-              
               const urlPath = `/finansial/${row.jenis.toLowerCase()}/detail/${row.id}`;
               const referrerTag = encodeURIComponent(location.pathname + location.search);
 
@@ -470,7 +465,7 @@ export const LaporanFinansialPage: React.FC = () => {
                   onClick={() => navigate(`${urlPath}?referrer=${referrerTag}`)}
                 >
                   <TableCell className="align-top !text-FontSizeXs text-left">
-                    <span className="font-medium text-TextColorBase">{formatDateTimeWithPipe(safeDateStr)}</span>
+                    <span className="font-medium text-TextColorBase">{formatDateTimeWithPipe(row.transaction_date)}</span>
                   </TableCell>
                   
                   {/* Kolom Jenis: Menggunakan text-!red-500 (huruf kecil) */}
@@ -633,7 +628,7 @@ export const LaporanFinansialPage: React.FC = () => {
             {/* Floating AI Button - Revised Animation */}
       <button 
         onClick={() => setIsChatOpen(true)}
-        className="hidden fixed bottom-6 right-6 w-16 h-16 z-[100] group focus:outline-none"
+        className="fixed bottom-6 right-6 w-16 h-16 z-[100] group focus:outline-none"
         style={{
           // Menghapus background, menambah filter drop shadow agar menonjol dari background halaman
           filter: 'drop-shadow(0px 10px 15px rgba(0, 70, 145, 0.3))',

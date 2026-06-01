@@ -48,15 +48,15 @@ export const penjualanService = {
     }
 
     if (startDate) {
-      whereClause += ` AND p.datetime >= ?`;
-      params.push(`${startDate} 00:00:00`);
-      countParams.push(`${startDate} 00:00:00`);
+      whereClause += ` AND date(p.datetime) >= ?`;
+      params.push(startDate);
+      countParams.push(startDate);
     }
 
     if (endDate) {
-      whereClause += ` AND p.datetime <= ?`;
-      params.push(`${endDate} 23:59:59`);
-      countParams.push(`${endDate} 23:59:59`);
+      whereClause += ` AND date(p.datetime) <= ?`;
+      params.push(endDate);
+      countParams.push(endDate);
     }
 
     const sqlData = `
@@ -582,15 +582,15 @@ export const penjualanService = {
     }
 
     if (startDate) {
-      whereClause += ` AND p.datetime >= ?`;
-      params.push(`${startDate} 00:00:00`);
-      countParams.push(`${startDate} 00:00:00`);
+      whereClause += ` AND date(p.datetime) >= ?`;
+      params.push(startDate);
+      countParams.push(startDate);
     }
 
     if (endDate) {
-      whereClause += ` AND p.datetime <= ?`;
-      params.push(`${endDate} 23:59:59`);
-      countParams.push(`${endDate} 23:59:59`);
+      whereClause += ` AND date(p.datetime) <= ?`;
+      params.push(endDate);
+      countParams.push(endDate);
     }
 
     const sqlData = `

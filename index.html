@@ -19,51 +19,15 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #0537ab;
+        background-color: #ffffff;
         z-index: 999999;
         overflow: hidden;
-        transition:
-          opacity 0.6s ease-in-out,
-          visibility 0.6s;
+        transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       #splash-screen.fade-out {
         opacity: 0;
-        visibility: hidden;
-        transition-delay: 1.4s; /* Match disk total duration (1.2s + 0.2s delay) */
-      }
-
-      .splash-disk {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 300vmax;
-        height: 300vmax;
-        border-radius: 50%;
-        transform: translate(-50%, -50%) scale(1);
-        z-index: 1;
-        transition: transform 1.2s cubic-bezier(0.85, 0, 0.15, 1);
-      }
-
-      .splash-disk.white {
-        background-color: #ffffff;
-        z-index: 3;
-      }
-
-      .splash-disk.mid-blue {
-        background-color: #1a56e0; /* Lighter Blue */
-        z-index: 2;
-        transition-delay: 0.1s;
-      }
-
-      .splash-disk.dark-blue {
-        background-color: #042a82; /* Darker Blue */
-        z-index: 1;
-        transition-delay: 0.2s;
-      }
-
-      #splash-screen.fade-out .splash-disk {
-        transform: translate(-50%, -50%) scale(0);
+        pointer-events: none;
       }
 
       .splash-content {
@@ -72,39 +36,43 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        transition:
-          transform 1.1s cubic-bezier(0.85, 0, 0.15, 1),
-          opacity 0.9s cubic-bezier(0.85, 0, 0.15, 1);
+        animation: splash-in 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
       }
 
       #splash-screen.fade-out .splash-content {
-        transform: scale(0);
-        opacity: 0;
+        animation: splash-out 0.8s cubic-bezier(0.4, 0, 1, 1) forwards;
       }
 
       .splash-logo {
-        width: 180px;
+        width: 260px;
         height: auto;
         opacity: 0;
-        transform: scale(0.85);
-        animation: splash-in 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+        filter: drop-shadow(0 10px 25px rgba(0,0,0,0.08));
       }
 
       @keyframes splash-in {
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.9);
+        }
         to {
           opacity: 1;
-          transform: scale(1);
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes splash-out {
+        to {
+          opacity: 0;
+          transform: translateY(-20px) scale(1.05);
         }
       }
     </style>
   </head>
   <body>
     <div id="splash-screen">
-      <div class="splash-disk dark-blue"></div>
-      <div class="splash-disk mid-blue"></div>
-      <div class="splash-disk white"></div>
       <div class="splash-content">
-        <img src="/maindi-logo.png" alt="Maindi Logo" class="splash-logo" />
+        <img src="https://lh3.googleusercontent.com/d/1U_Zz244W4Rw-I8OQNDskVSeGHm9DPDoU" alt="Pangan Mas Abadi" class="splash-logo" style="opacity: 1;" />
       </div>
     </div>
     <div id="root"></div>
@@ -112,7 +80,7 @@
 
     <script>
       (function () {
-        const MIN_DURATION = 1000;
+        const MIN_DURATION = 5000;
         const startTime = Date.now();
 
         const hideSplash = () => {
@@ -126,15 +94,14 @@
               splash.classList.add('fade-out');
               setTimeout(() => {
                 splash.remove();
-              }, 2000); // Harus lebih lama dari transition-delay + duration container
+              }, 1000); 
             }, remaining);
           }
         };
 
         window.addEventListener('load', hideSplash);
-        setTimeout(hideSplash, 3000);
+        setTimeout(hideSplash, 6000); // Fallback
       })();
     </script>
   </body>
 </html>
-

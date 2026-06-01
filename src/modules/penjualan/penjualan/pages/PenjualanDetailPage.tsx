@@ -15,6 +15,7 @@ import {
 import { ICustomer } from '../../../../logic/types/ITs_Customer';
 import { penjualanService } from '../../../../logic/services/penjualanService';
 import { customerService } from '../../../../logic/services/customerService';
+import { infoService } from '../../../../logic/services/infoService';
 import { toast } from 'react-hot-toast';
 import { useGlobalState } from '../../../../logic/context/GlobalContext';
 import { cn } from '../../../../logic/utils/cn';
@@ -267,6 +268,14 @@ const heightWeights = {
 };
 
 const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, id = "invoice-print-container" }) => {
+  const [infoInfo, setInfoInfo] = useState<{ alamat: string; no_telepon: string } | null>(null);
+
+  useEffect(() => {
+    infoService.getInfo().then(data => {
+      if (data) setInfoInfo({ alamat: data.alamat, no_telepon: data.no_telepon });
+    });
+  }, []);
+
   const signatureSrc = signatureData || getProxyImageUrl(data.approval_signature_url);
 
   const getPages = (): InvoicePageData[] => {
@@ -411,8 +420,13 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
                         {appAssets.Company}
                       </h1>
                     <p className="text-xs text-slate-600 max-w-[400px] leading-relaxed break-words">
-                      {appAssets.Alamat}
+                      {infoInfo?.alamat || appAssets.Alamat}
                     </p>
+                    {infoInfo?.no_telepon && (
+                      <p className="text-xs text-slate-600 mt-1">
+                        Telp: {infoInfo.no_telepon}
+                      </p>
+                    )}
                   </div>
                   <div className="text-right">
                     <h2 className="text-3xl font-black tracking-wider uppercase text-slate-800 mb-2">
@@ -1017,6 +1031,14 @@ export const PenjualanDetailPage: React.FC = () => {
   const { state, setIsLoading: setGlobalLoading, refreshNotifications } = useGlobalState();
   const isMobile = state.viewport.isMobile;
 
+  const [infoInfo, setInfoInfo] = useState<{ alamat: string; no_telepon: string } | null>(null);
+
+  useEffect(() => {
+    infoService.getInfo().then(data => {
+      if (data) setInfoInfo({ alamat: data.alamat, no_telepon: data.no_telepon });
+    });
+  }, []);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState<TActiveTab>('customer');
@@ -1388,13 +1410,13 @@ export const PenjualanDetailPage: React.FC = () => {
           </div>
 
           <div className={cn("grid grid-cols-1 md:grid-cols-3 gap-SpacingMedium items-stretch h-full", isMobile ? "col-span-1" : "col-span-7")}>
-            <div className="bg-ColorPrimary border border-ColorPrimary/20 p-5 rounded-3xl justify-center flex flex-col shadow-sm h-32 md:h-full">
+            <div className="bg-[linear-gradient(to_top,#93F9B9,#1D976C)] p-5 rounded-3xl justify-center flex flex-col shadow-sm h-32 md:h-full">
                <span className="text-Black text-[0.6875rem] font-bold uppercase opacity-60">Total Produk</span>
                <span className="text-Black text-[1.25rem] font-black tracking-tight leading-tight">
                  {formatCurrency(data.sum_product_price || 0)}
                </span>
             </div>
-            <div className="bg-ColorSecondary border border-ColorSecondary/20 p-5 rounded-3xl flex flex-col justify-center shadow-sm h-32 md:h-full">
+            <div className="bg-[linear-gradient(to_bottom,#f37335,#fdc830)] p-5 rounded-3xl flex flex-col justify-center shadow-sm h-32 md:h-full">
                <span className="text-Black text-[0.6875rem] font-bold uppercase opacity-60">Total Biaya</span>
                <span className="text-Black text-[1.25rem] font-black tracking-tight leading-tight">
                  {formatCurrency(data.sum_added_cost || 0)}
@@ -1867,8 +1889,13 @@ export const PenjualanDetailPage: React.FC = () => {
                         {appAssets.Company}
                       </h1>
                       <p className="text-sm text-gray-800 break-words max-w-sm">
-                        {appAssets.Alamat}
+                        {infoInfo?.alamat || appAssets.Alamat}
                       </p>
+                      {infoInfo?.no_telepon && (
+                        <p className="text-sm text-gray-800 mt-1">
+                          Telp: {infoInfo.no_telepon}
+                        </p>
+                      )}
                     </div>
                     <h2 className="text-4xl font-black tracking-widest uppercase mt-2">
                       INVOICE

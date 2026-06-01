@@ -3,6 +3,35 @@
  * Specialized utilities for date formatting and manipulation.
  */
 
+/**
+ * FORMAT DISPLAY DATE TIME
+ * Converts database UTC string to localized Date and Time components.
+ * Specifically handles Turso/SQLite "YYYY-MM-DD HH:mm:ss" format as UTC.
+ */
+export const formatDateDisplay = (dateStr: string | null | undefined): { date: string; time: string } => {
+  if (!dateStr) return { date: '-', time: '-' };
+
+  try {
+    // Normalize to ISO-8601 with Z suffix to ensure UTC parsing
+    let normalized = dateStr;
+    if (!dateStr.includes('T') && !dateStr.includes('Z')) {
+      normalized = dateStr.replace(' ', 'T') + 'Z';
+    } else if (dateStr.includes('T') && !dateStr.includes('Z')) {
+      normalized = dateStr + 'Z';
+    }
+
+    const d = new Date(normalized);
+    if (isNaN(d.getTime())) return { date: '-', time: '-' };
+
+    return {
+      date: formatDate(d),
+      time: `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+    };
+  } catch (e) {
+    return { date: '-', time: '-' };
+  }
+};
+
 // 1. Format Date (Indonesian Standard)
 export const formatDate = (
   date: Date | string | number,

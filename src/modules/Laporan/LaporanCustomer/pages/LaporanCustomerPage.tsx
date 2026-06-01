@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, MapPin, TrendingUp, BarChart3, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
-import { DateRange } from 'react-day-picker';
-import { format } from 'date-fns';
-import { id as localeId } from 'date-fns/locale';
+import { ChevronRight } from 'lucide-react';
 import { MainShell } from '../../../../ui/components/common/shells/MainShell';
 import { useGlobalState } from '../../../../logic/context/GlobalContext';
 import { laporanCustomerService, CustomerReportData } from '../../../../logic/services/laporanCustomerService';
@@ -14,47 +11,30 @@ import { cn } from '../../../../logic/utils/cn';
 import { Card } from '../../../../ui/components/common/Card';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '../../../../ui/components/common/Table';
 import { CustomerMap } from '../components/CustomerMap';
-import { DateRangePicker } from '../../../../ui/components/elements/DateRangePicker';
 
 export const LaporanCustomerPage: React.FC = () => {
   const { state } = useGlobalState();
   const isMobile = state.viewport.isMobile;
   const navigate = useNavigate();
 
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(new Date().setDate(new Date().getDate() - 29)),
-    to: new Date()
-  });
-  
   const [isLoading, setIsLoading] = useState(true);
   const [reportData, setReportData] = useState<CustomerReportData | null>(null);
 
   const fetchData = async () => {
-    if (!date?.from || !date?.to) return;
     setIsLoading(true);
-    
-    // Format to YYYY-MM-DD for API
-    const startStr = format(date.from, 'yyyy-MM-dd');
-    const endStr = format(date.to, 'yyyy-MM-dd');
-    
-    const data = await laporanCustomerService.getCustomerReport(startStr, endStr);
+    const data = await laporanCustomerService.getCustomerReport();
     setReportData(data);
     setIsLoading(false);
   };
 
   useEffect(() => {
     fetchData();
-  }, [date]);
-
-  const getSubtitleFormat = () => {
-    if (!date?.from || !date?.to) return '';
-    return `${format(date.from, "dd MMM yyyy", { locale: localeId })} - ${format(date.to, "dd MMM yyyy", { locale: localeId })}`;
-  };
+  }, []);
 
   if (isLoading) {
     return (
       <MainShell title="Laporan Customer" subtitle="Analisis data pelanggan dan sebaran lokasi" hideSearch hideDownload>
-        <PageLoading text="Menyusun data customer..." />
+          <PageLoading text="Menyusun data customer..." />
       </MainShell>
     );
   }
@@ -62,22 +42,8 @@ export const LaporanCustomerPage: React.FC = () => {
   return (
     <MainShell 
       title="Laporan Customer" 
-      subtitle={getSubtitleFormat()} 
+      subtitle="Semua data pelanggan dan sebaran lokasi" 
       onBack={() => navigate('/')}
-      actions={
-        <div className="flex items-center gap-SpacingSmall">
-          <div className={cn("flex flex-col gap-SpacingNano", isMobile ? "items-start" : "items-end")}>
-            <div className="flex items-center gap-2 text-TextColorMuted">
-              <CalendarIcon size={12} className="opacity-70" />
-              <span className="text-[0.625rem] font-bold uppercase tracking-widest text-Slate400">Rentang Waktu</span>
-            </div>
-            <DateRangePicker 
-              date={date} 
-              onDateChange={setDate} 
-            />
-          </div>
-        </div>
-      }
       hideSearch 
       hideDownload
     >

@@ -95,6 +95,7 @@ import { LaporanProdukPage } from './modules/Laporan/LaporanProduk/pages/Laporan
 import { LaporanPemasaranPage } from './modules/Laporan/LaporanPemasaran/pages/LaporanPemasaranPage';
 import { LaporanCustomerPage } from './modules/Laporan/LaporanCustomer/pages/LaporanCustomerPage';
 import { LoginPage } from './modules/auth/LoginPage';
+import WelcomingPage from './modules/WelcomingPage';
 import { PemasaranPage } from './modules/Pemasaran/PemasaranPage';
 import { PemasaranFormPage } from './modules/Pemasaran/PemasaranFormPage';
 import { PemasaranDetailPage } from './modules/Pemasaran/PemasaranDetailPage';
@@ -108,6 +109,8 @@ import { Toaster } from 'react-hot-toast';
 import { useGlobalState } from './logic/context/GlobalContext';
 import { APP_CONFIG } from './logic/constants/app';
 import { useEffect } from 'react';
+import { getDefaultRoute } from './logic/utils/auth';
+import { Navigate } from 'react-router-dom';
 
 /**
  * Scroll Restorer Component
@@ -147,8 +150,9 @@ function AppContent() {
         <Route path="/login" element={<LoginPage />} />
         {/* Main App Layout Route Wrapper as Root */}
         <Route path="/" element={<MainAppLayout />}>
-          <Route index element={<DashboardPage />} />
+          <Route index element={<WelcomingPage />} />
           
+          <Route path="dashboard" element={<DashboardPage />} />
           <Route path="sample" element={<SampleMenu />} />
           <Route path="sample/fonts" element={<FontSimulation />} />
           <Route path="sample/icons" element={<IconVisualization />} />

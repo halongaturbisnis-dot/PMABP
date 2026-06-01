@@ -53,7 +53,11 @@ export function DateRangePicker({
 
   const handleApply = () => {
     if (onDateChange) {
-      onDateChange(internalDate);
+      if (internalDate?.from && !internalDate?.to) {
+        onDateChange({ from: internalDate.from, to: internalDate.from });
+      } else {
+        onDateChange(internalDate);
+      }
     }
     setShowCalendar(false);
   };
@@ -82,7 +86,7 @@ export function DateRangePicker({
     { label: "3 Bulan Terakhir", range: { from: subMonths(startOfMonth(today), 2), to: today } },
   ];
 
-  const isValidRange = internalDate?.from && internalDate?.to && Math.abs(differenceInDays(internalDate.to, internalDate.from)) <= 92;
+  const isValidRange = !!internalDate?.from && (!internalDate.to || Math.abs(differenceInDays(internalDate.to, internalDate.from)) <= 92);
 
   return (
     <div className={cn("relative z-[60]", className)}>

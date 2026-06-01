@@ -58,15 +58,19 @@ export const stokOpnameService = {
     }
 
     if (startDate) {
+      const localDate = new Date(`${startDate}T00:00:00`);
+      const utcStart = localDate.toISOString().replace('T', ' ').slice(0, 19);
       whereClause += ` AND so.created_at >= ?`;
-      params.push(`${startDate} 00:00:00`);
-      countParams.push(`${startDate} 00:00:00`);
+      params.push(utcStart);
+      countParams.push(utcStart);
     }
 
     if (endDate) {
+      const localDate = new Date(`${endDate}T23:59:59`);
+      const utcEnd = localDate.toISOString().replace('T', ' ').slice(0, 19);
       whereClause += ` AND so.created_at <= ?`;
-      params.push(`${endDate} 23:59:59`);
-      countParams.push(`${endDate} 23:59:59`);
+      params.push(utcEnd);
+      countParams.push(utcEnd);
     }
 
     const sqlData = `

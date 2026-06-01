@@ -34,23 +34,39 @@ export const stokTerbuangService = {
   async getPaginated(
     page: number = 1,
     limit: number = 15,
-    search: string = ''
+    search: string = '',
+    startDate?: string,
+    endDate?: string
   ): Promise<{ items: IStokTerbuang[]; total: number }> {
     const offset = (page - 1) * limit;
-    let whereClause = 'WHERE 1=1';
+    let whereConditions: string[] = ['1=1'];
     const params: any[] = [];
-    const countParams: any[] = [];
-
+    
     if (search) {
-      whereClause += ` AND (sku LIKE ? OR name LIKE ? OR category LIKE ? OR sub_category LIKE ? OR description LIKE ?)`;
+      whereConditions.push(`(sku LIKE ? OR name LIKE ? OR category LIKE ? OR sub_category LIKE ? OR description LIKE ?)`);
       const s = `%${search}%`;
       params.push(s, s, s, s, s);
-      countParams.push(s, s, s, s, s);
     }
 
+    if (startDate) {
+      const localDate = new Date(`${startDate}T00:00:00`);
+      const utcStart = localDate.toISOString().replace('T', ' ').slice(0, 19);
+      whereConditions.push(`created_at >= ?`);
+      params.push(utcStart);
+    }
+
+    if (endDate) {
+      const localDate = new Date(`${endDate}T23:59:59`);
+      const utcEnd = localDate.toISOString().replace('T', ' ').slice(0, 19);
+      whereConditions.push(`created_at <= ?`);
+      params.push(utcEnd);
+    }
+
+    const whereClause = `WHERE ${whereConditions.join(' AND ')}`;
     const sqlData = `SELECT * FROM stok_terbuang ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`;
     const sqlCount = `SELECT COUNT(*) as total FROM stok_terbuang ${whereClause}`;
 
+    const countParams = [...params];
     params.push(limit, offset);
 
     try {

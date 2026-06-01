@@ -31,6 +31,12 @@ import { ITs_Penjualan } from '../../../../logic/types/ITs_Penjualan';
 import { Landmark } from 'lucide-react';
 import { ComposedChart } from '../../../../ui/components/common/ComposedChart';
 
+const parseSafeDate = (dateStr?: string | null): Date => {
+  if (!dateStr) return new Date(0);
+  const normalized = dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T');
+  return new Date(normalized);
+};
+
 export const LaporanPenjualanPage: React.FC = () => {
   const { state } = useGlobalState();
   const isMobile = state.viewport.isMobile;
@@ -367,7 +373,7 @@ export const LaporanPenjualanPage: React.FC = () => {
                         onClick={() => navigate(`/penjualan/penjualan/detail/${row.id}?referrer=/laporan/penjualan`)}
                       >
                         <TableCell className="whitespace-nowrap">
-                          {row.datetime ? format(new Date(row.datetime), 'dd/MM/yyyy HH:mm') : '-'}
+                          {row.datetime ? format(parseSafeDate(row.datetime), 'dd/MM/yyyy HH:mm') : '-'}
                         </TableCell>
                         <TableCell className="!text-FontSizeXs !text-center font-bold text-ColorPrimary">{row.invoice_number}</TableCell>
                         <TableCell className="!text-FontSizeXs !text-center font-medium">{row.customer_name || '-'}</TableCell>

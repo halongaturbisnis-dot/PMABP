@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { MainShell } from '../../../ui/components/common/shells/MainShell';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '../../../ui/components/common/Table';
 import { Pagination } from '../../../ui/components/common/Pagination';
+import { DateRangePicker } from '../../../ui/components/elements/DateRangePicker';
+import { DateRange } from 'react-day-picker';
+import { formatDateLocal } from '../../../logic/utils/date';
 import { getPageFetchLimit } from '../../../logic/services/fetchingCenter';
 import { stokReturService } from '../../../logic/services/stokReturService';
 import { IStokRetur } from '../../../logic/types/ITs_StokRetur';
@@ -11,7 +14,7 @@ import { Skeleton } from '../../../ui/components/elements/Skeleton';
 import { PrimaryButton } from '../../../ui/components/elements/Button';
 import { cn } from '../../../logic/utils/cn';
 import { useGlobalState } from '../../../logic/context/GlobalContext';
-import { formatDate } from '../../../logic/utils/date';
+import { formatDate, formatDateDisplay } from '../../../logic/utils/date';
 import { formatCurrency } from '../../../logic/utils/data';
 import { StokReturFormModal } from './StokReturFormModal';
 import { StokReturDetailModal } from './StokReturDetailModal';
@@ -30,6 +33,7 @@ export const StokReturPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const limit = getPageFetchLimit('StokReturPage') || 15;
 
   // Modal integration states
@@ -40,7 +44,10 @@ export const StokReturPage: React.FC = () => {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { items, total } = await stokReturService.getPaginated(page, limit, searchTerm);
+      const startDate = dateRange?.from ? formatDateLocal(dateRange.from) : undefined;
+      const endDate = dateRange?.to ? formatDateLocal(dateRange.to) : (dateRange?.from ? formatDateLocal(dateRange.from) : undefined);
+      
+      const { items, total } = await stokReturService.getPaginated(page, limit, searchTerm, startDate, endDate);
       setData(items);
       setTotalItems(total);
     } catch (err) {
@@ -48,7 +55,7 @@ export const StokReturPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [searchTerm, page, limit]);
+  }, [searchTerm, page, limit, dateRange]);
 
   useEffect(() => {
     fetchData();
@@ -56,7 +63,7 @@ export const StokReturPage: React.FC = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, dateRange]);
 
   return (
     <MainShell 
@@ -79,15 +86,27 @@ export const StokReturPage: React.FC = () => {
             />
           </div>
           
-          <PrimaryButton
-            id="stok-retur-tambah-btn"
-            onClick={() => {
-              setIsModalOpen(true);
-            }}
-            icon={<Plus size={16} />}
-          >
-            Tambah Retur
-          </PrimaryButton>
+          <div className={cn("flex flex-1 items-center gap-[0.75rem]", !isMobile && "justify-end")}>
+            <div className={cn(isMobile ? "w-full" : "w-auto min-w-[200px]")}>
+              <DateRangePicker
+                date={dateRange}
+                onDateChange={setDateRange}
+                placeholder="Filter Waktu Retur..."
+                className="w-full"
+              />
+            </div>
+
+            <PrimaryButton
+              id="stok-retur-tambah-btn"
+              onClick={() => {
+                setIsModalOpen(true);
+              }}
+              icon={<Plus size={16} />}
+              className="whitespace-nowrap"
+            >
+              Tambah Retur
+            </PrimaryButton>
+          </div>
         </div>
 
         <Table id="stok-retur-table" noBorder={true}>
@@ -125,10 +144,15 @@ export const StokReturPage: React.FC = () => {
                   }}
                 >
                   <TableCell noBorder={true} className="!text-left px-[1rem]">
-                    <div className="flex flex-col">
-                      <span className="text-[0.875rem] font-bold text-[#1e3a34]">{formatDate(row.created_at)}</span>
-                      <span className="text-[0.7rem] text-[#64748b]">{row.created_at?.split(/[ T]/)[1]?.slice(0, 5) || ''}</span>
-                    </div>
+                    {(() => {
+                      const { date, time } = formatDateDisplay(row.created_at);
+                      return (
+                        <div className="flex flex-col">
+                          <span className="text-[0.875rem] font-bold text-[#1e3a34]">{date}</span>
+                          <span className="text-[0.7rem] text-[#64748b]">{time}</span>
+                        </div>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell noBorder={true} className="!text-left px-[1rem]">
                     <span className="text-[0.875rem] font-bold text-[#1e293b]">

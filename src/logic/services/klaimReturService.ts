@@ -47,15 +47,15 @@ export const klaimReturService = {
     }
 
     if (startDate) {
-      whereClause += ` AND kr.datetime >= ?`;
-      params.push(`${startDate} 00:00:00`);
-      countParams.push(`${startDate} 00:00:00`);
+      whereClause += ` AND date(kr.datetime) >= ?`;
+      params.push(startDate);
+      countParams.push(startDate);
     }
 
     if (endDate) {
-      whereClause += ` AND kr.datetime <= ?`;
-      params.push(`${endDate} 23:59:59`);
-      countParams.push(`${endDate} 23:59:59`);
+      whereClause += ` AND date(kr.datetime) <= ?`;
+      params.push(endDate);
+      countParams.push(endDate);
     }
 
     // Validate sort column to prevent SQL injection

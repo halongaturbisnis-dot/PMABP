@@ -166,7 +166,7 @@ export const StokReturFormModal: React.FC<StokReturFormModalProps> = ({
       <div className="flex flex-col gap-[1rem]">
         {/* Info Banner of Selected Product Stock */}
         {runningStock && (
-          <div className="bg-[#f0fdf4] p-[0.75rem] rounded-[0.75rem] border border-[#dcfce7] flex items-center justify-between text-TextColorBase">
+          <div className="hidden bg-[#f0fdf4] p-[0.75rem] rounded-[0.75rem] border border-[#dcfce7] flex items-center justify-between text-TextColorBase">
             <div className="flex flex-col gap-[0.125rem]">
               <span className="text-[0.6875rem] text-[#166534] font-bold uppercase tracking-wider">
                 Persediaan Saat Ini (Stok Berjalan)

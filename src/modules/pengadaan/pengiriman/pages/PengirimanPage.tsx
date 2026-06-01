@@ -177,7 +177,10 @@ export const PengirimanPage: React.FC = () => {
           id="pengiriman-tabs" 
           activeTab={activeTab} 
           tabs={tabs} 
-          onChange={(id) => setActiveTab(String(id))} 
+          onChange={(id) => {
+            setActiveTab(String(id));
+            if (id !== 'done') setDateRange(undefined);
+          }} 
           variant="underline"
           className="mb-SpacingMedium"
         />
@@ -194,12 +197,14 @@ export const PengirimanPage: React.FC = () => {
           </div>
 
           <div className={cn(isMobile ? "w-full" : "flex-shrink-0")}>
-            <DateRangePicker
-              date={dateRange}
-              onDateChange={handleDateRangeChange}
-              placeholder="Filter Tanggal..."
-              className="w-full"
-            />
+            {activeTab === 'done' && (
+              <DateRangePicker
+                date={dateRange}
+                onDateChange={handleDateRangeChange}
+                placeholder="Filter Tanggal..."
+                className="w-full"
+              />
+            )}
           </div>
         </div>
 

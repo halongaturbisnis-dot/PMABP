@@ -34,31 +34,66 @@ export const penerimaanService = {
     limit: number = 15, 
     search: string = '', 
     sortKey: string = 'datetime', 
-    sortDir: 'asc' | 'desc' | null = 'desc'
-  ): Promise<{ items: ITs_Penerimaan[], total: number }> {
+    sortDir: 'asc' | 'desc' | null = 'desc',
+    startDate?: string,
+    endDate?: string
+  ): Promise<{ items: any[], total: number }> {
     const offset = (page - 1) * limit;
-    let whereClause = '';
+    let whereConditions: string[] = [];
     const params: any[] = [];
-    const countParams: any[] = [];
     
     if (search) {
-      whereClause = `WHERE rejected_reason LIKE ? OR description LIKE ? OR sorting_type LIKE ?`;
+      whereConditions.push(`(pr.rejected_reason LIKE ? OR pr.description LIKE ? OR pr.sorting_type LIKE ? OR pp.name LIKE ? OR p.po_number LIKE ?)`);
       const searchParam = `%${search}%`;
-      params.push(searchParam, searchParam, searchParam);
-      countParams.push(searchParam, searchParam, searchParam);
+      params.push(searchParam, searchParam, searchParam, searchParam, searchParam);
     }
+
+    if (startDate) {
+      whereConditions.push(`date(pr.datetime) >= ?`);
+      params.push(startDate);
+    }
+
+    if (endDate) {
+      whereConditions.push(`date(pr.datetime) <= ?`);
+      params.push(endDate);
+    }
+
+    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
     
-    let orderClause = `ORDER BY datetime DESC`;
+    let orderClause = `ORDER BY pr.datetime DESC`;
     if (sortKey && sortDir) {
       const allowedKeys = ['datetime', 'qty_received_actual', 'accepted_valuation', 'sorting_type'];
       if (allowedKeys.includes(sortKey)) {
-        orderClause = `ORDER BY ${sortKey} ${sortDir.toUpperCase()}`;
+        orderClause = `ORDER BY pr.${sortKey} ${sortDir.toUpperCase()}`;
       }
     }
     
-    const sqlData = `SELECT * FROM penerimaan ${whereClause} ${orderClause} LIMIT ? OFFSET ?`;
-    const sqlCount = `SELECT COUNT(*) as total FROM penerimaan ${whereClause}`;
+    const sqlData = `
+      SELECT 
+        pr.*,
+        pp.name as nama_produk,
+        pp.unit,
+        pp.qty as purchase_qty,
+        pp.category,
+        pp.sub_category,
+        p.po_number as kode_pembelian,
+        p.datetime as po_date
+      FROM penerimaan pr
+      JOIN pembelian_produk pp ON pr.purchase_product_id = pp.id
+      JOIN pembelian p ON pr.purchase_id = p.id
+      ${whereClause} 
+      ${orderClause} 
+      LIMIT ? OFFSET ?
+    `;
+    const sqlCount = `
+      SELECT COUNT(*) as total 
+      FROM penerimaan pr
+      JOIN pembelian_produk pp ON pr.purchase_product_id = pp.id
+      JOIN pembelian p ON pr.purchase_id = p.id
+      ${whereClause}
+    `;
     
+    const countParams = [...params];
     params.push(limit, offset);
     
     try {
@@ -67,7 +102,7 @@ export const penerimaanService = {
         dbClient.query(sqlCount, countParams)
       ]);
       
-      const items = dataRes.rows as any[] as ITs_Penerimaan[];
+      const items = dataRes.rows as any[];
       const total = Number((countRes.rows[0] as any).total || 0);
       
       return { items, total };

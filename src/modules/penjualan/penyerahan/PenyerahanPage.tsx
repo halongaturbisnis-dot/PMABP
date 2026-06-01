@@ -270,12 +270,14 @@ export const PenyerahanPage: React.FC = () => {
           </div>
 
           <div className={cn(isMobile ? "w-full" : "flex-shrink-0")}>
-            <DateRangePicker
-              date={dateRange}
-              onDateChange={handleDateRangeChange}
-              placeholder="Filter Tanggal..."
-              className="w-full"
-            />
+            {activeTab === 'selesai' && (
+              <DateRangePicker
+                date={dateRange}
+                onDateChange={handleDateRangeChange}
+                placeholder="Filter Tanggal..."
+                className="w-full"
+              />
+            )}
           </div>
         </div>
         

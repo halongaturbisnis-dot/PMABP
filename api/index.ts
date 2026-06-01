@@ -4,6 +4,9 @@ import { config } from "../src/logic/utils/config";
 import { databaseActiveService } from "../src/logic/services/databaseActiveService";
 import { dbClient } from "../src/logic/libs/database";
 import { aiService } from "../src/logic/services/aiService";
+import { getS3Client } from "../src/logic/libs/storageClient";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import type { Readable } from "stream";
 
 // Validate config
 config.validate();
@@ -179,6 +182,44 @@ app.get("/api/proxy-image", async (req, res) => {
   } catch (err: any) {
     console.error("[Proxy Image Error]", err);
     res.status(500).send(err.message);
+  }
+});
+
+// Tigris Private Storage Proxy
+app.get("/api/images/:key(*)", async (req, res) => {
+  try {
+    const { key } = req.params;
+    const bucketName = config.tigris.bucket;
+
+    if (!bucketName) {
+      res.status(500).send("Storage bucket not configured");
+      return;
+    }
+
+    const s3Client = getS3Client();
+    const response = await s3Client.send(new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    }));
+
+    if (response.ContentType) res.setHeader("Content-Type", response.ContentType);
+    if (response.ContentLength) res.setHeader("Content-Length", response.ContentLength);
+    
+    // Caching header for better performance
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+
+    if (response.Body) {
+      (response.Body as Readable).pipe(res);
+    } else {
+      res.status(404).send("File not found");
+    }
+  } catch (error: any) {
+    if (error.name === "NoSuchKey") {
+      res.status(404).send("File not found");
+    } else {
+      console.error("[Tigris Proxy Error]:", error);
+      res.status(500).send("Failed to fetch image from storage");
+    }
   }
 });
 

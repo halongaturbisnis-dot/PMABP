@@ -56,13 +56,13 @@ export const pengeluaranService = {
 
     // Filter berdasarkan Tanggal
     if (options?.startDate) {
-      whereConditions.push(`transaction_date >= ?`);
-      params.push(`${options.startDate} 00:00:00`);
+      whereConditions.push(`date(transaction_date) >= ?`);
+      params.push(options.startDate);
     }
 
     if (options?.endDate) {
-      whereConditions.push(`transaction_date <= ?`);
-      params.push(`${options.endDate} 23:59:59`);
+      whereConditions.push(`date(transaction_date) <= ?`);
+      params.push(options.endDate);
     }
 
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';

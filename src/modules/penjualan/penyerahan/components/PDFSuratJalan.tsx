@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IPenyerahanPayload } from '../../../../logic/types/ITs_Penyerahan';
 import { appAssets } from '../../../../ui/styles/assets';
 import { formatCurrency } from '../../../../logic/utils/data';
@@ -8,6 +8,7 @@ import { cn } from '../../../../logic/utils/cn';
 import { safeHtml2Canvas } from '../../../../logic/utils/pdf';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-hot-toast';
+import { infoService } from '../../../../logic/services/infoService';
 
 interface PDFSuratJalanProps {
   data: IPenyerahanPayload;
@@ -40,6 +41,14 @@ const heightWeights = {
 };
 
 export const SuratJalanTemplate: React.FC<PDFSuratJalanProps> = ({ data, id = "surat-jalan-render-container" }) => {
+  const [infoInfo, setInfoInfo] = useState<{ alamat: string; no_telepon: string } | null>(null);
+
+  useEffect(() => {
+    infoService.getInfo().then(data => {
+      if (data) setInfoInfo({ alamat: data.alamat, no_telepon: data.no_telepon });
+    });
+  }, []);
+
   const getPages = (): SJPageData[] => {
     const pagesList: SJPageData[] = [];
     let currentPageNumber = 1;
@@ -142,8 +151,13 @@ export const SuratJalanTemplate: React.FC<PDFSuratJalanProps> = ({ data, id = "s
                       {appAssets.Company}
                     </h1>
                     <p className="text-xs max-w-[400px] leading-relaxed break-words" style={{ color: '#475569' }}>
-                      {appAssets.Alamat}
+                      {infoInfo?.alamat || appAssets.Alamat}
                     </p>
+                    {infoInfo?.no_telepon && (
+                      <p className="text-xs mt-1" style={{ color: '#475569' }}>
+                        Telp: {infoInfo.no_telepon}
+                      </p>
+                    )}
                   </div>
                   <div className="text-right">
                     <h2 className="text-3xl font-black tracking-wider uppercase mb-2" style={{ color: '#1E293B' }}>

@@ -4,6 +4,9 @@ import { MainShell } from '../../../ui/components/common/shells/MainShell';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, SortDirection } from '../../../ui/components/common/Table';
 import { Pagination } from '../../../ui/components/common/Pagination';
 import { Tabs } from '../../../ui/components/common/Tabs';
+import { DateRangePicker } from '../../../ui/components/elements/DateRangePicker';
+import { DateRange } from 'react-day-picker';
+import { formatDateLocal } from '../../../logic/utils/date';
 import { getPageFetchLimit } from '../../../logic/services/fetchingCenter';
 import { stokMasukService } from '../../../logic/services/stokMasukService';
 import { IStokMasuk } from '../../../logic/types/ITs_StokMasuk';
@@ -15,7 +18,7 @@ import { PrimaryButton } from '../../../ui/components/elements/Button';
 import { NotificationBadge } from '../../../ui/components/elements/NotificationBadge';
 import { cn } from '../../../logic/utils/cn';
 import { useGlobalState } from '../../../logic/context/GlobalContext';
-import { formatDate } from '../../../logic/utils/date';
+import { formatDate, formatDateDisplay } from '../../../logic/utils/date';
 import { formatCurrency } from '../../../logic/utils/data';
 import { StokMasukFormModal } from './StokMasukFormModal';
 import { StokMasukDetailModal } from './StokMasukDetailModal';
@@ -37,6 +40,7 @@ export const StokMasukPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const limit = getPageFetchLimit('DaftarStokMasuk');
 
   // Modal integration states
@@ -59,7 +63,10 @@ export const StokMasukPage: React.FC = () => {
         const offset = (page - 1) * limit;
         setData(filtered.slice(offset, offset + limit));
       } else {
-        const { items, total } = await stokMasukService.getPaginated(page, limit, searchTerm);
+        const startDate = dateRange?.from ? formatDateLocal(dateRange.from) : undefined;
+        const endDate = dateRange?.to ? formatDateLocal(dateRange.to) : (dateRange?.from ? formatDateLocal(dateRange.from) : undefined);
+        
+        const { items, total } = await stokMasukService.getPaginated(page, limit, searchTerm, startDate, endDate);
         setData(items);
         setTotalItems(total);
       }
@@ -68,7 +75,7 @@ export const StokMasukPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [searchTerm, activeTab, page, limit]);
+  }, [searchTerm, activeTab, page, limit, dateRange]);
 
   useEffect(() => {
     fetchData();
@@ -76,7 +83,7 @@ export const StokMasukPage: React.FC = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, activeTab]);
+  }, [searchTerm, activeTab, dateRange]);
 
   const tabs = [
     { 
@@ -110,18 +117,32 @@ export const StokMasukPage: React.FC = () => {
             variant="underline"
           />
           
-          {activeTab === 'queue' && (
-            <PrimaryButton
-              id="stok-masuk-tambah-btn"
-              onClick={() => {
-                setSelectedQueueItem(null);
-                setIsModalOpen(true);
-              }}
-              icon={<Plus size={16} />}
-            >
-              Tambah
-            </PrimaryButton>
-          )}
+          <div className={cn("flex flex-1 items-center gap-[0.75rem]", !isMobile && "justify-end")}>
+            {activeTab === 'history' && (
+              <div className={cn(isMobile ? "w-full" : "w-auto min-w-[200px]")}>
+                <DateRangePicker
+                  date={dateRange}
+                  onDateChange={setDateRange}
+                  placeholder="Filter Waktu Masuk..."
+                  className="w-full"
+                />
+              </div>
+            )}
+            
+            {activeTab === 'queue' && (
+              <PrimaryButton
+                id="stok-masuk-tambah-btn"
+                onClick={() => {
+                  setSelectedQueueItem(null);
+                  setIsModalOpen(true);
+                }}
+                icon={<Plus size={16} />}
+                className="whitespace-nowrap"
+              >
+                Tambah
+              </PrimaryButton>
+            )}
+          </div>
         </div>
 
         <div className={cn("flex items-center gap-[0.75rem]", isMobile && "flex-col items-stretch")}>
@@ -229,10 +250,15 @@ export const StokMasukPage: React.FC = () => {
                   ) : (
                     <>
                       <TableCell noBorder={true} className="!text-left px-[1rem]">
-                        <div className="flex flex-col">
-                          <span className="text-[0.875rem] font-bold text-[#1e3a34]">{formatDate(row.created_at)}</span>
-                          <span className="text-[0.7rem] text-[#64748b]">{row.created_at?.split(/[ T]/)[1]?.slice(0, 5) || ''}</span>
-                        </div>
+                        {(() => {
+                          const { date, time } = formatDateDisplay(row.created_at);
+                          return (
+                            <div className="flex flex-col">
+                              <span className="text-[0.875rem] font-bold text-[#1e3a34]">{date}</span>
+                              <span className="text-[0.7rem] text-[#64748b]">{time}</span>
+                            </div>
+                          );
+                        })()}
                       </TableCell>
                       <TableCell noBorder={true} className="!text-left px-[1rem]">
                         <div className="flex flex-col">

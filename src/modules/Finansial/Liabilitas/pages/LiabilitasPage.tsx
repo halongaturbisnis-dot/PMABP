@@ -17,7 +17,7 @@ import { tokens } from '../../../../ui/styles/tokens';
 import { cn } from '../../../../logic/utils/cn';
 import { useGlobalState } from '../../../../logic/context/GlobalContext';
 import { formatCurrency } from '../../../../logic/utils/data';
-import { formatDateShort } from '../../../../logic/utils/date';
+import { formatDateShort, formatDateFull } from '../../../../logic/utils/date';
 
 export const LiabilitasPage: React.FC = () => {
   const navigate = useNavigate();
@@ -150,7 +150,7 @@ export const LiabilitasPage: React.FC = () => {
                   onClick={() => navigate(`/finansial/liabilitas/detail/${row.id}`)}
                 >
                   <TableCell noBorder={true} className="!text-center text-FontSizeXs">
-                    {formatDateShort(row.datetime)}
+                    {formatDateFull(row.datetime)}
                   </TableCell>
                   <TableCell noBorder={true} className="!text-center text-FontSizeXs font-medium">
                     {row.entity_name}

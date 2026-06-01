@@ -698,13 +698,13 @@ export const PenjualanFormPage: React.FC = () => {
           </div>
 
           <div className={cn("grid grid-cols-1 md:grid-cols-3 gap-SpacingMedium items-stretch h-full", isMobile ? "col-span-1" : "col-span-7")}>
-            <div className="bg-ColorPrimary border border-ColorPrimary/20 p-5 rounded-3xl justify-center flex flex-col shadow-sm h-32 md:h-full">
+            <div className="bg-[linear-gradient(to_top,#93F9B9,#1D976C)] p-5 rounded-3xl justify-center flex flex-col shadow-sm h-32 md:h-full">
               <span className="text-Black text-[0.6875rem] font-bold uppercase opacity-60">Total Produk</span>
               <span className="text-Black text-[1.25rem] font-black tracking-tight leading-tight">
                 {formatCurrency(formData.sum_product_price || 0)}
               </span>
             </div>
-            <div className="bg-ColorSecondary border border-ColorSecondary/20 p-5 rounded-3xl flex flex-col justify-center shadow-sm h-32 md:h-full">
+            <div className="bg-[linear-gradient(to_bottom,#f37335,#fdc830)] p-5 rounded-3xl flex flex-col justify-center shadow-sm h-32 md:h-full">
               <span className="text-Black text-[0.6875rem] font-bold uppercase opacity-60">Total Biaya</span>
               <span className="text-Black text-[1.25rem] font-black tracking-tight leading-tight">
                 {formatCurrency(formData.sum_added_cost || 0)}

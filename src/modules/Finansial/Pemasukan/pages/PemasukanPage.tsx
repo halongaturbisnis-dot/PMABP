@@ -18,7 +18,7 @@ import { tokens } from '../../../../ui/styles/tokens';
 import { cn } from '../../../../logic/utils/cn';
 import { useGlobalState } from '../../../../logic/context/GlobalContext';
 import { formatCurrency } from '../../../../logic/utils/data';
-import { formatDateShort, formatDateFull } from '../../../../logic/utils/date';
+import { formatDateShort, formatDateFull, formatDateLocal } from '../../../../logic/utils/date';
 import { Tabs } from '../../../../ui/components/common/Tabs';
 import { NotificationBadge } from '../../../../ui/components/elements/NotificationBadge';
 import { bankAndCashService } from '../../../../logic/services/bankAndCashService';
@@ -90,8 +90,8 @@ export const PemasukanPage: React.FC = () => {
           limit,
           sortKey: sortConfig.key,
           sortDir: sortConfig.direction === 'asc' ? 'asc' : 'desc',
-          startDate: dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
-          endDate: dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined
+          startDate: dateRange?.from ? formatDateLocal(dateRange.from) : undefined,
+          endDate: dateRange?.to ? formatDateLocal(dateRange.to) : (dateRange?.from ? formatDateLocal(dateRange.from) : undefined)
         }
       );
       setData(result.items);
@@ -232,16 +232,23 @@ export const PemasukanPage: React.FC = () => {
               className="bg-ColorBg !rounded-RadiusMedium !border-ColorPrimary/25 hover:!border-ColorPrimary focus:!border-ColorPrimary focus-visible:!border-ColorPrimary focus:!ring-0 focus-visible:!ring-0 transition-all shadow-sm"
             />
           </div>
-          {activeTab === 'DAFTAR' && (
-            <div className={cn(isMobile ? "w-full" : "flex-shrink-0")}>
-              <DateRangePicker
-                date={dateRange}
-                onDateChange={handleDateRangeChange}
-                placeholder="Filter Tanggal..."
-                className="w-full"
-              />
-            </div>
-          )}
+
+          <div className={cn("flex items-center gap-[0.75rem]", !isMobile && "flex-1 justify-end")}>
+            {activeTab === 'DAFTAR' && (
+              <div className={cn(isMobile ? "w-full" : "w-auto min-w-[200px]")}>
+                <DateRangePicker
+                  date={dateRange}
+                  onDateChange={handleDateRangeChange}
+                  placeholder="Filter Tanggal..."
+                  className="w-full"
+                />
+              </div>
+            )}
+
+            <Plus 
+              className="hidden" // Placeholder for alignment consistent with other pages
+            />
+          </div>
         </div>
 
         {activeTab === 'DAFTAR' ? (
@@ -295,7 +302,7 @@ export const PemasukanPage: React.FC = () => {
                   onClick={() => navigate(`/finansial/pemasukan/detail/${row.id}`)}
                 >
                   <TableCell noBorder={true} className="text-TextColorBase text-FontSizeXs font-normal">
-                    {formatDateShort(row.transaction_date)}
+                    {formatDateFull(row.transaction_date)}
                   </TableCell>
                   <TableCell noBorder={true} className="text-TextColorBase text-FontSizeXs font-normal">
                     {row.type}

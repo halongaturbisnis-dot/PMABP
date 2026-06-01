@@ -34,23 +34,39 @@ export const stokMasukService = {
   async getPaginated(
     page: number = 1,
     limit: number = 15,
-    search: string = ''
+    search: string = '',
+    startDate?: string,
+    endDate?: string
   ): Promise<{ items: IStokMasuk[]; total: number }> {
     const offset = (page - 1) * limit;
-    let whereClause = 'WHERE 1=1';
+    let whereConditions: string[] = ['1=1'];
     const params: any[] = [];
-    const countParams: any[] = [];
-
+    
     if (search) {
-      whereClause += ` AND (stok_masuk.name LIKE ? OR stok_masuk.sku LIKE ? OR stok_masuk.category LIKE ? OR stok_masuk.purchase_id LIKE ? OR stok_masuk.receiving_id LIKE ?)`;
+      whereConditions.push(`(stok_masuk.name LIKE ? OR stok_masuk.sku LIKE ? OR stok_masuk.category LIKE ? OR stok_masuk.purchase_id LIKE ? OR stok_masuk.receiving_id LIKE ?)`);
       const s = `%${search}%`;
       params.push(s, s, s, s, s);
-      countParams.push(s, s, s, s, s);
     }
 
+    if (startDate) {
+      const localDate = new Date(`${startDate}T00:00:00`);
+      const utcStart = localDate.toISOString().replace('T', ' ').slice(0, 19);
+      whereConditions.push(`stok_masuk.created_at >= ?`);
+      params.push(utcStart);
+    }
+
+    if (endDate) {
+      const localDate = new Date(`${endDate}T23:59:59`);
+      const utcEnd = localDate.toISOString().replace('T', ' ').slice(0, 19);
+      whereConditions.push(`stok_masuk.created_at <= ?`);
+      params.push(utcEnd);
+    }
+
+    const whereClause = `WHERE ${whereConditions.join(' AND ')}`;
     const sqlData = `SELECT stok_masuk.*, pembelian.po_number as kode_pembelian FROM stok_masuk LEFT JOIN pembelian ON stok_masuk.purchase_id = pembelian.id ${whereClause} ORDER BY stok_masuk.created_at DESC LIMIT ? OFFSET ?`;
     const sqlCount = `SELECT COUNT(*) as total FROM stok_masuk ${whereClause}`;
 
+    const countParams = [...params];
     params.push(limit, offset);
 
     try {
