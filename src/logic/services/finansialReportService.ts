@@ -1,6 +1,6 @@
-import { dbClient } from '../libs/database';
-import { errorService } from './errorService';
-import { stokBerjalanService } from './stokBerjalanService';
+import { dbClient } from '../libs/database.js';
+import { errorService } from './errorService.js';
+import { stokBerjalanService } from './stokBerjalanService.js';
 import { format, eachDayOfInterval, isSameDay } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 

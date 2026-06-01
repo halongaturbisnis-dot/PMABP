@@ -1,10 +1,10 @@
 import "dotenv/config";
 import express from "express";
-import { config } from "../src/logic/utils/config";
-import { databaseActiveService } from "../src/logic/services/databaseActiveService";
-import { dbClient } from "../src/logic/libs/database";
-import { aiService } from "../src/logic/services/aiService";
-import { getS3Client } from "../src/logic/libs/storageClient";
+import { config } from "../src/logic/utils/config.js";
+import { databaseActiveService } from "../src/logic/services/databaseActiveService.js";
+import { dbClient } from "../src/logic/libs/database.js";
+import { aiService } from "../src/logic/services/aiService.js";
+import { getS3Client } from "../src/logic/libs/storageClient.js";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import type { Readable } from "stream";
 

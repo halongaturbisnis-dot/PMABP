@@ -7,6 +7,7 @@
 const GOOGLE_AUTH_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth';
 
 export const googleAuthConfig = {
+  // @ts-ignore
   clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID || '',
   redirectUri: `${window.location.origin}/auth/google/callback`,
   scopes: [

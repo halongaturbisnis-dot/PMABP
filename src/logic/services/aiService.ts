@@ -1,5 +1,5 @@
-import { config } from '../utils/config';
-import { finansialReportService } from './finansialReportService';
+import { config } from '../utils/config.js';
+import { finansialReportService } from './finansialReportService.js';
 
 export interface AIAnalysisRequest {
   startDate: string;
