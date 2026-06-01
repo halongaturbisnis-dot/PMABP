@@ -65,6 +65,14 @@ Logika di `src/logic/*` sering kali dipanggil oleh Backend (API). Karena Backend
    const baseUrl = typeof window !== 'undefined' ? window.location.origin : (process.env.APP_URL || '');
    ```
 
+### D. Storage Key Management (S3)
+Saat mengirim key untuk penghapusan (delete), pastikan Key yang dikirim adalah **Clean S3 Key**, bukan full URL atau API Proxy path.
+- **Masalah**: Mengirim `/api/images/folder/file.jpg` ke S3 `DeleteObject` akan gagal (404 Not Found) karena key yang benar adalah `folder/file.jpg`.
+- **Solusi**: Di sisi service, lakukan ekstraksi key secara defensif:
+  ```typescript
+  const actualKey = key.includes('/api/images/') ? key.split('/api/images/').pop() : key;
+  ```
+
 ### C. Flexible Environment Access
 Sistem build yang berbeda (Vite vs standard CI/CD) seringkali menggunakan prefix variabel yang berbeda. `config.ts` harus mampu mendeteksi keduanya:
 ```typescript

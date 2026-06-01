@@ -1,9 +1,19 @@
 {
-  "short_name": "Pangan Mas Abadi",
+  "short_name": "PMA",
   "name": "Pangan Mas Abadi",
-  "icons": [],
-  "start_url": ".",
+  "description": "Aplikasi Manajemen Distribusi Pangan Mas Abadi",
+  "icons": [
+    {
+      "src": "/maindi-logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "scope": "/"
 }

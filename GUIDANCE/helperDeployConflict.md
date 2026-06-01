@@ -78,6 +78,15 @@ Saat melakukan `fetch` di dalam logika bersama, pastikan URL-nya absolut jika be
     : (process.env.APP_URL || process.env.VITE_APP_URL || '');
   ```
 
+### E. Konflik Storage Key (Full URL vs Key)
+**Masalah:** Saat menghapus file (Delete), database seringkali menyimpan Full Path atau Proxy Path (seperti `/api/images/...`). Jika dikirim langsung ke S3 API, penghapusan akan gagal.
+- **Gejala:** Log bilang "Permanently deleting", tapi file tetap ada di Tigris/S3.
+- **Penyebab:** SDK S3 mencari key `/api/images/file.jpg` di dalam bucket, padahal key aslinya cuma `file.jpg`.
+- **Solusi:** Selalu gunakan helper untuk membersihkan key sebelum memanggil `DeleteObjectCommand`.
+  ```typescript
+  const actualKey = key.split('/api/images/').pop() || key;
+  ```
+
 ---
 
 ## 3. Checklist Sebelum Deploy/Ship

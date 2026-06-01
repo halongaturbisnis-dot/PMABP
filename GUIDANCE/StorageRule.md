@@ -30,4 +30,15 @@ Untuk mencegah penumpukan file sampah (orphan files) di Tigris:
 - Setelah berhasil upload, URL file wajib disimpan kembali ke database sebagai referensi utama.
 
 ---
+
+## 6. Penanganan Key Saat Penghapusan
+Untuk menjamin file benar-benar terhapus dari Tigris, Key yang dikirim ke `DeleteObjectCommand` harus berupa **Relative Path**, bukan full path atau proxy path.
+- **Masalah**: Database sering menyimpan proxy path `/api/images/folder/file.jpg`. Jika ini dikirim langsung, S3 akan gagal menemukan file (404).
+- **Mandat**: Selalu bersihkan key menggunakan helper logika:
+  ```typescript
+  // Contoh Ekstraksi
+  const actualKey = key.includes('/api/images/') ? key.split('/api/images/').pop() : key;
+  ```
+
+---
 *Dibuat untuk menjaga integritas data dan efisiensi penyimpanan pada infrastruktur Tigris.*
