@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
+import { safeHtml2Canvas } from "../../../../logic/utils/pdf";
 import { storageService } from '../../../../logic/services/storage';
 import { dataURLtoFile } from '../../../../logic/utils/file';
-import { injectTailwindHexFallback } from '../../../../logic/utils/pdf';
 import { DetailShell } from '../../../../ui/components/common/shells/DetailShell';
 import { TextInput, PriceInput, LongTextInput, PhoneInput, EmailInput } from '../../../../ui/components/elements/Inputs';
 import { DateTimeInput, DateInput } from '../../../../ui/components/elements/DateTimeInput';
@@ -525,7 +524,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
               {/* PAYMENT SUMMARY & TOTAL TAGIHAN */}
               {page.showSummary && (
                 <div className="grid grid-cols-2 gap-8 mt-4">
-                  <div className="border border-dashed border-slate-300 p-4 rounded-lg bg-slate-50">
+                  <div className="border border-dashed border-slate-300 p-4 rounded-lg bg-slate-50/50">
                     <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-1.5 mb-2 flex items-center gap-1.5">
                     
                       Detail Pembayaran
@@ -540,7 +539,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
                           <td className="py-1 text-slate-500">Metode Pembayaran</td>
                           <td className="py-1 font-semibold text-right text-slate-800">{data.payment_method || '-'}</td>
                         </tr>
-                        <tr className="border-t border-slate-200">
+                        <tr className="border-t border-slate-200/50">
                           <td className="py-1 text-slate-500">Uang Muka (Deposit)</td>
                           <td className="py-1 font-bold text-right text-slate-900">Rp {(data.deposit || 0).toLocaleString('id-ID')}</td>
                         </tr>
@@ -598,7 +597,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data, signatureData, 
                     <p className="text-xs text-slate-500 mb-1 leading-none">Hormat Kami,</p>
                     <p className="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-wider">{appAssets.Company}</p>
                     
-                    <div className="h-20 w-full relative flex items-center justify-center border border-dashed border-slate-200 rounded my-2 bg-slate-50 overflow-hidden">
+                    <div className="h-20 w-full relative flex items-center justify-center border border-dashed border-slate-200 rounded my-2 bg-slate-50/30 overflow-hidden">
                       {signatureSrc ? (
                         <img 
                           src={signatureSrc} 
@@ -670,7 +669,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
       
       for (let i = 0; i < sheets.length; i++) {
         const sheet = sheets[i] as HTMLElement;
-        const canvas = await html2canvas(sheet, { 
+        const canvas = await safeHtml2Canvas(sheet, { 
           scale: 1.5,
           useCORS: true,
           allowTaint: false,
@@ -680,7 +679,6 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
             const rootEl = clonedDoc.documentElement;
             if (rootEl) {
               rootEl.style.fontSize = '16px';
-              injectTailwindHexFallback(rootEl);
             }
 
             // Un-squeeze potential responsive mobile shrinking inside the clone
@@ -698,6 +696,21 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
               el.style.transform = 'none';
               el.style.margin = '0 auto';
             });
+
+            const colorRegex = /(oklch|oklab|color-mix|display-p3|hwb)\([^)]+\)/g;
+            const styleTags = clonedDoc.getElementsByTagName('style');
+            for (let j = 0; j < styleTags.length; j++) {
+              styleTags[j].innerHTML = styleTags[j].innerHTML.replace(colorRegex, '#475569');
+            }
+            const allElements = clonedDoc.getElementsByTagName('*');
+            for (let j = 0; j < allElements.length; j++) {
+              const el = allElements[j] as HTMLElement;
+              if (el.style && el.style.cssText) {
+                if (colorRegex.test(el.style.cssText)) {
+                  el.style.cssText = el.style.cssText.replace(colorRegex, '#475569');
+                }
+              }
+            }
           }
         });
         
@@ -737,7 +750,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
       const images: string[] = [];
       for (let i = 0; i < sheets.length; i++) {
         const sheet = sheets[i] as HTMLElement;
-        const canvas = await html2canvas(sheet, { 
+        const canvas = await safeHtml2Canvas(sheet, { 
           scale: 1.5,
           useCORS: true,
           allowTaint: false,
@@ -747,7 +760,6 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
             const rootEl = clonedDoc.documentElement;
             if (rootEl) {
               rootEl.style.fontSize = '16px';
-              injectTailwindHexFallback(rootEl);
             }
 
             // Un-squeeze potential responsive mobile shrinking inside the clone
@@ -765,6 +777,21 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
               el.style.transform = 'none';
               el.style.margin = '0 auto';
             });
+
+            const colorRegex = /(oklch|oklab|color-mix|display-p3|hwb)\([^)]+\)/g;
+            const styleTags = clonedDoc.getElementsByTagName('style');
+            for (let j = 0; j < styleTags.length; j++) {
+              styleTags[j].innerHTML = styleTags[j].innerHTML.replace(colorRegex, '#475569');
+            }
+            const allElements = clonedDoc.getElementsByTagName('*');
+            for (let j = 0; j < allElements.length; j++) {
+              const el = allElements[j] as HTMLElement;
+              if (el.style && el.style.cssText) {
+                if (colorRegex.test(el.style.cssText)) {
+                  el.style.cssText = el.style.cssText.replace(colorRegex, '#475569');
+                }
+              }
+            }
           }
         });
         const imgData = canvas.toDataURL('image/jpeg', 0.8);
@@ -904,7 +931,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({ isOpen, onClo
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] flex flex-col bg-slate-900 backdrop-blur-sm select-none">
+    <div className="fixed inset-0 z-[99999] flex flex-col bg-slate-900/80 backdrop-blur-sm select-none">
       <div className={cn(
         "flex flex-shrink-0 bg-white border-b border-slate-200 shadow-md",
         isMobile ? "flex-col p-SpacingMedium gap-SpacingBase" : "flex-row justify-between items-center px-6 py-4"
@@ -1103,15 +1130,25 @@ export const PenjualanDetailPage: React.FC = () => {
           parentElement.style.display = 'block';
           
           try {
-            const canvas = await html2canvas(element, { 
+            const canvas = await safeHtml2Canvas(element, { 
               scale: 2,
               useCORS: true,
               allowTaint: false,
               backgroundColor: '#ffffff',
               onclone: (clonedDoc) => {
-                const rootEl = clonedDoc.documentElement;
-                if (rootEl) {
-                  injectTailwindHexFallback(rootEl);
+                const colorRegex = /(oklch|oklab|color-mix|display-p3|hwb)\([^)]+\)/g;
+                const styleTags = clonedDoc.getElementsByTagName('style');
+                for (let j = 0; j < styleTags.length; j++) {
+                  styleTags[j].innerHTML = styleTags[j].innerHTML.replace(colorRegex, '#475569');
+                }
+                const allElements = clonedDoc.getElementsByTagName('*');
+                for (let j = 0; j < allElements.length; j++) {
+                  const el = allElements[j] as HTMLElement;
+                  if (el.style && el.style.cssText) {
+                    if (colorRegex.test(el.style.cssText)) {
+                      el.style.cssText = el.style.cssText.replace(colorRegex, '#475569');
+                    }
+                  }
                 }
               }
             });
@@ -1919,7 +1956,7 @@ export const PenjualanDetailPage: React.FC = () => {
                   <div className="break-inside-avoid mb-6">
                     <div className="flex justify-between items-start text-sm gap-8">
                       {/* Payment Info */}
-                      <div className="w-1/2 border border-gray-800 p-4 rounded-sm bg-gray-50 hidden print:block border-dashed">
+                      <div className="w-1/2 border border-gray-800 p-4 rounded-sm bg-gray-50/50 hidden print:block border-dashed">
                         <h3 className="font-bold font-sans mb-3 text-[0.6875rem] uppercase tracking-wider border-b border-gray-300 pb-2">Informasi Pembayaran</h3>
                         <table className="w-full text-left text-xs">
                           <tbody>
@@ -1948,7 +1985,7 @@ export const PenjualanDetailPage: React.FC = () => {
                           </tbody>
                         </table>
                       </div>
-                      <div className="w-1/2 border border-gray-800 p-4 rounded-sm bg-gray-50 print:hidden block border-dashed">
+                      <div className="w-1/2 border border-gray-800 p-4 rounded-sm bg-gray-50/50 print:hidden block border-dashed">
                         <h3 className="font-bold font-sans mb-3 text-[0.6875rem] uppercase tracking-wider border-b border-gray-300 pb-2">Informasi Pembayaran</h3>
                         <table className="w-full text-left text-xs">
                           <tbody>

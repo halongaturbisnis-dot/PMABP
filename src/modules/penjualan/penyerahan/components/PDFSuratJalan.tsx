@@ -1,4 +1,3 @@
-import { injectTailwindHexFallback } from '../../../../logic/utils/pdf';
 import React from 'react';
 import { IPenyerahanPayload } from '../../../../logic/types/ITs_Penyerahan';
 import { appAssets } from '../../../../ui/styles/assets';
@@ -6,7 +5,7 @@ import { formatCurrency } from '../../../../logic/utils/data';
 import { Eye, Truck, Package, User, FileText, Download, Printer, X } from 'lucide-react';
 import { useGlobalState } from '../../../../logic/context/GlobalContext';
 import { cn } from '../../../../logic/utils/cn';
-import html2canvas from 'html2canvas';
+import { safeHtml2Canvas } from '../../../../logic/utils/pdf';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-hot-toast';
 
@@ -294,9 +293,24 @@ export const SuratJalanPreviewModal: React.FC<{
   if (!isOpen) return null;
 
   const fixHtml2CanvasOklch = (clonedDoc: Document) => {
-    const rootEl = clonedDoc.documentElement;
-    if (rootEl) {
-      injectTailwindHexFallback(rootEl);
+    // OKLCH Fix - html2canvas cannot parse oklch/oklab/color-mix
+    const colorRegex = /(oklch|oklab|color-mix|display-p3|hwb)\([^)]+\)/g;
+    
+    // 1. Fix Style Tags
+    const styleTags = clonedDoc.getElementsByTagName('style');
+    for (let j = 0; j < styleTags.length; j++) {
+      styleTags[j].innerHTML = styleTags[j].innerHTML.replace(colorRegex, '#475569');
+    }
+    
+    // 2. Fix Inline Styles on all elements
+    const allElements = clonedDoc.getElementsByTagName('*');
+    for (let j = 0; j < allElements.length; j++) {
+      const el = allElements[j] as HTMLElement;
+      if (el.style && el.style.cssText && colorRegex.test(el.style.cssText)) {
+          el.style.cssText = el.style.cssText.replace(colorRegex, '#475569');
+      }
+      
+      // Also check computed styles if possible, but onclone should be enough for inline/style tags
     }
   };
 
@@ -313,7 +327,7 @@ export const SuratJalanPreviewModal: React.FC<{
       
       for (let i = 0; i < sheets.length; i++) {
         const sheet = sheets[i] as HTMLElement;
-        const canvas = await html2canvas(sheet, { 
+        const canvas = await safeHtml2Canvas(sheet, { 
           scale: 2,
           useCORS: true,
           backgroundColor: '#ffffff',
@@ -343,7 +357,7 @@ export const SuratJalanPreviewModal: React.FC<{
       const sheets = element.querySelectorAll('.surat-jalan-page-sheet');
       const images: string[] = [];
       for (let i = 0; i < sheets.length; i++) {
-        const canvas = await html2canvas(sheets[i] as HTMLElement, { 
+        const canvas = await safeHtml2Canvas(sheets[i] as HTMLElement, { 
           scale: 2, 
           useCORS: true, 
           backgroundColor: '#ffffff',
@@ -393,7 +407,7 @@ export const SuratJalanPreviewModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex flex-col bg-slate-900 backdrop-blur-sm select-none">
+    <div className="fixed inset-0 z-[60] flex flex-col bg-slate-900/80 backdrop-blur-sm select-none">
       <div className={cn(
         "flex bg-white border-b",
         isMobile ? "flex-col p-SpacingMedium gap-SpacingBase" : "flex-row justify-between items-center px-6 py-4"

@@ -2,6 +2,197 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { tokens } from '../../ui/styles/tokens';
 
+export const safeHtml2Canvas = async (element: HTMLElement, options: any = {}): Promise<HTMLCanvasElement> => {
+  const activeRestorers: (() => void)[] = [];
+
+  const oklchToRgb = (l: number, c: number, h: number, a: number = 1): string => {
+    const hRad = (h * Math.PI) / 180;
+    const L = l;
+    const aVal = c * Math.cos(hRad);
+    const bVal = c * Math.sin(hRad);
+    
+    const l_ = L + 0.3963377774 * aVal + 0.2118028117 * bVal;
+    const m_ = L - 0.1055613458 * aVal - 0.0881400234 * bVal;
+    const s_ = L - 0.0894841775 * aVal - 1.2914855480 * bVal;
+    
+    const l3 = l_ * l_ * l_;
+    const m3 = m_ * m_ * m_;
+    const s3 = s_ * s_ * s_;
+    
+    const rL = +4.0767416621 * l3 - 3.3077115913 * m3 + 0.2309699292 * s3;
+    const gL = -1.2684380046 * l3 + 2.6097574011 * m3 - 0.3413193965 * s3;
+    const bL = -0.0041960863 * l3 - 0.7034186147 * m3 + 1.7076147010 * s3;
+    
+    const rVal = rL <= 0.0031308 ? 12.92 * rL : 1.055 * Math.pow(rL, 1 / 2.4) - 0.055;
+    const gVal = gL <= 0.0031308 ? 12.92 * gL : 1.055 * Math.pow(gL, 1 / 2.4) - 0.055;
+    const bVal2 = bL <= 0.0031308 ? 12.92 * bL : 1.055 * Math.pow(bL, 1 / 2.4) - 0.055;
+    
+    const R = Math.max(0, Math.min(255, Math.round(rVal * 255)));
+    const G = Math.max(0, Math.min(255, Math.round(gVal * 255)));
+    const B = Math.max(0, Math.min(255, Math.round(bVal2 * 255)));
+    
+    return `rgba(${R}, ${G}, ${B}, ${a})`;
+  };
+
+  const parseOklchAndReplace = (cssString: string): string => {
+    if (typeof cssString !== 'string') return cssString;
+    let res = cssString;
+    
+    res = res.replace(/oklch\(\s*([\d.]+%?)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+%?))?\s*\)/gi, (match, lStr, sChr, sHue, sAlpha) => {
+      try {
+        const l = lStr.endsWith('%') ? parseFloat(lStr) / 100 : parseFloat(lStr);
+        const c = parseFloat(sChr);
+        const h = parseFloat(sHue);
+        let a = 1;
+        if (sAlpha) {
+          a = sAlpha.endsWith('%') ? parseFloat(sAlpha) / 100 : parseFloat(sAlpha);
+        }
+        return oklchToRgb(l, c, h, a);
+      } catch (e) {
+        return 'rgba(71, 85, 105, 1)';
+      }
+    });
+
+    res = res.replace(/oklch\(\s*([\d.]+%?)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+%?))?\s*\)/gi, (match, lStr, sChr, sHue, sAlpha) => {
+      try {
+        const l = lStr.endsWith('%') ? parseFloat(lStr) / 100 : parseFloat(lStr);
+        const c = parseFloat(sChr);
+        const h = parseFloat(sHue);
+        let a = 1;
+        if (sAlpha) {
+          a = sAlpha.endsWith('%') ? parseFloat(sAlpha) / 100 : parseFloat(sAlpha);
+        }
+        return oklchToRgb(l, c, h, a);
+      } catch (e) {
+        return 'rgba(71, 85, 105, 1)';
+      }
+    });
+
+    res = res.replace(/oklch\([^)]+\)/gi, 'rgba(71, 85, 105, 1)');
+    res = res.replace(/(oklab|color-mix|display-p3|hwb)\([^)]+\)/gi, 'rgba(71, 85, 105, 1)');
+
+    return res;
+  };
+
+  // 1. Intercept CSSRule.prototype.cssText
+  const originalCssTextDescriptor = Object.getOwnPropertyDescriptor(CSSRule.prototype, 'cssText');
+  if (originalCssTextDescriptor && originalCssTextDescriptor.get) {
+    Object.defineProperty(CSSRule.prototype, 'cssText', {
+      get() {
+        const originalText = originalCssTextDescriptor.get!.call(this);
+        return typeof originalText === 'string' ? parseOklchAndReplace(originalText) : originalText;
+      },
+      configurable: true
+    });
+    activeRestorers.push(() => {
+      Object.defineProperty(CSSRule.prototype, 'cssText', originalCssTextDescriptor);
+    });
+  }
+
+  // 2. Intercept CSSStyleDeclaration.prototype.cssText
+  const originalDeclCssTextDescriptor = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'cssText');
+  if (originalDeclCssTextDescriptor && originalDeclCssTextDescriptor.get) {
+    Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', {
+      get() {
+        const originalText = originalDeclCssTextDescriptor.get!.call(this);
+        return typeof originalText === 'string' ? parseOklchAndReplace(originalText) : originalText;
+      },
+      configurable: true
+    });
+    activeRestorers.push(() => {
+      Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', originalDeclCssTextDescriptor);
+    });
+  }
+
+  // 3. Intercept CSSStyleDeclaration.prototype.getPropertyValue
+  const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
+  CSSStyleDeclaration.prototype.getPropertyValue = function(prop) {
+    const val = originalGetPropertyValue.call(this, prop);
+    return typeof val === 'string' ? parseOklchAndReplace(val) : val;
+  };
+  activeRestorers.push(() => {
+    CSSStyleDeclaration.prototype.getPropertyValue = originalGetPropertyValue;
+  });
+
+  // 4. Intercept style elements textContent in memory
+  const styleElements = Array.from(document.querySelectorAll('style'));
+  const originalContents = styleElements.map(el => el.textContent || '');
+  styleElements.forEach(el => {
+    if (el.textContent && /oklch/gi.test(el.textContent)) {
+      el.textContent = parseOklchAndReplace(el.textContent);
+    }
+  });
+  activeRestorers.push(() => {
+    styleElements.forEach((el, idx) => {
+      el.textContent = originalContents[idx];
+    });
+  });
+
+  // 5. Intercept common shorthand properties
+  const originalPropertyDescriptors: Record<string, PropertyDescriptor> = {};
+  const colorProps = ['color', 'backgroundColor', 'borderColor', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor', 'outlineColor', 'fill', 'stroke'];
+  colorProps.forEach(prop => {
+    const desc = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, prop);
+    if (desc && desc.get) {
+      originalPropertyDescriptors[prop] = desc;
+      Object.defineProperty(CSSStyleDeclaration.prototype, prop, {
+        get() {
+          const val = desc.get!.call(this);
+          return typeof val === 'string' ? parseOklchAndReplace(val) : val;
+        },
+        configurable: true
+      });
+    }
+  });
+  activeRestorers.push(() => {
+    Object.keys(originalPropertyDescriptors).forEach(prop => {
+      Object.defineProperty(CSSStyleDeclaration.prototype, prop, originalPropertyDescriptors[prop]);
+    });
+  });
+
+  const customOnClone = (clonedDoc: Document) => {
+    if (options.onclone) {
+      options.onclone(clonedDoc);
+    }
+
+    const colorRegex = /(oklch|oklab|color-mix|display-p3|hwb)\([^)]+\)/g;
+    const clonedStyles = clonedDoc.getElementsByTagName('style');
+    for (let j = 0; j < clonedStyles.length; j++) {
+      if (clonedStyles[j].innerHTML) {
+        clonedStyles[j].innerHTML = parseOklchAndReplace(clonedStyles[j].innerHTML);
+      }
+    }
+
+    const clonedElements = clonedDoc.getElementsByTagName('*');
+    for (let j = 0; j < clonedElements.length; j++) {
+      const el = clonedElements[j] as HTMLElement;
+      if (el.style && el.style.cssText) {
+        if (colorRegex.test(el.style.cssText)) {
+          el.style.cssText = parseOklchAndReplace(el.style.cssText);
+        }
+      }
+    }
+  };
+
+  const cleanOptions = {
+    ...options,
+    onclone: customOnClone
+  };
+
+  try {
+    const res = await html2canvas(element, cleanOptions);
+    return res;
+  } finally {
+    for (let i = activeRestorers.length - 1; i >= 0; i--) {
+      try {
+        activeRestorers[i]();
+      } catch (e) {
+        console.warn("Failed to restore property interceptor: ", e);
+      }
+    }
+  }
+};
+
 /**
  * Helper to get CSS variable strings for light mode
  */
@@ -142,77 +333,6 @@ export const printPdf = (
   printWindow.document.close();
 };
 
-export const injectTailwindHexFallback = (root: HTMLElement) => {
-  const fallbacks: Record<string, string> = {
-    '--color-slate-50': '#f8fafc',
-    '--color-slate-100': '#f1f5f9',
-    '--color-slate-200': '#e2e8f0',
-    '--color-slate-300': '#cbd5e1',
-    '--color-slate-400': '#94a3b8',
-    '--color-slate-500': '#64748b',
-    '--color-slate-600': '#475569',
-    '--color-slate-700': '#334155',
-    '--color-slate-800': '#1e293b',
-    '--color-slate-900': '#0f172a',
-    '--color-slate-950': '#020617',
-    '--color-gray-50': '#f9fafb',
-    '--color-gray-100': '#f3f4f6',
-    '--color-gray-200': '#e5e7eb',
-    '--color-gray-300': '#d1d5db',
-    '--color-gray-400': '#9ca3af',
-    '--color-gray-500': '#6b7280',
-    '--color-gray-600': '#4b5563',
-    '--color-gray-700': '#374151',
-    '--color-gray-800': '#1f2937',
-    '--color-gray-900': '#111827',
-    '--color-gray-950': '#030712',
-    '--color-zinc-50': '#fafafa',
-    '--color-zinc-100': '#f4f4f5',
-    '--color-zinc-200': '#e4e4e7',
-    '--color-zinc-300': '#d4d4d8',
-    '--color-zinc-400': '#a1a1aa',
-    '--color-zinc-500': '#71717a',
-    '--color-zinc-600': '#52525b',
-    '--color-zinc-700': '#3f3f46',
-    '--color-zinc-800': '#27272a',
-    '--color-zinc-900': '#18181b',
-    '--color-zinc-950': '#09090b',
-    '--color-red-50': '#fef2f2',
-    '--color-red-100': '#fee2e2',
-    '--color-red-200': '#fecaca',
-    '--color-red-300': '#fca5a5',
-    '--color-red-400': '#f87171',
-    '--color-red-500': '#ef4444',
-    '--color-red-600': '#dc2626',
-    '--color-red-700': '#b91c1c',
-    '--color-red-800': '#991b1b',
-    '--color-red-900': '#7f1d1d',
-    '--color-green-50': '#f0fdf4',
-    '--color-green-100': '#dcfce7',
-    '--color-green-200': '#bbf7d0',
-    '--color-green-300': '#86efac',
-    '--color-green-400': '#4ade80',
-    '--color-green-500': '#22c55e',
-    '--color-green-600': '#16a34a',
-    '--color-green-700': '#15803d',
-    '--color-green-800': '#166534',
-    '--color-green-900': '#14532d',
-    '--color-blue-50': '#eff6ff',
-    '--color-blue-100': '#dbeafe',
-    '--color-blue-200': '#bfdbfe',
-    '--color-blue-300': '#93c5fd',
-    '--color-blue-400': '#60a5fa',
-    '--color-blue-500': '#3b82f6',
-    '--color-blue-600': '#2563eb',
-    '--color-blue-700': '#1d4ed8',
-    '--color-blue-800': '#1e40af',
-    '--color-blue-900': '#1e3a8a',
-  };
-  Object.entries(fallbacks).forEach(([key, val]) => {
-    root.style.setProperty(key, val, 'important');
-  });
-};
-
 export interface PdfExportOptions {
   filename?: string;
   multiPage?: boolean;
@@ -228,7 +348,7 @@ export const downloadPdf = async (elementId: string, options: PdfExportOptions =
   const { filename = 'document.pdf', multiPage = false } = options;
 
   try {
-    const canvas = await html2canvas(element, { 
+    const canvas = await safeHtml2Canvas(element, { 
       scale: 2.5, // Increased scale for crispiness
       useCORS: true, 
       backgroundColor: tokens.colors.light.ColorBg,
