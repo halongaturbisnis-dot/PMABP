@@ -3,6 +3,8 @@
 -- Contains tables for: penjualan, penjualan_produk, penjualan_produk_mixing, and penjualan_biaya.
 -- Standard: Mengikuti aturan DatabaseRule.md, TimeRule.md, StorageRule.md
 
+PRAGMA foreign_keys = OFF;
+
 -- ==========================================
 -- 1. Table: penjualan
 -- ==========================================
@@ -305,3 +307,5 @@ BEGIN
   SET updated_at = CURRENT_TIMESTAMP 
   WHERE id = OLD.id;
 END;
+
+PRAGMA foreign_keys = ON;

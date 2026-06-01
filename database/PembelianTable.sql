@@ -2,9 +2,6 @@
 -- Description: Skema database untuk modul Pembelian (Procurement).
 -- Standard: Mengikuti aturan DatabaseRule.md, TimeRule.md, dan StorageRule.md
 
--- 1. Mulai transaksi aman level database (Sesuai DatabaseRule.md 4.B)
-BEGIN TRANSACTION;
-
 -- 2. Nonaktifkan foreign key check untuk mempermudah manipulasi tabel relasional
 PRAGMA foreign_keys = OFF;
 
@@ -256,6 +253,3 @@ END;
 
 -- Aktifkan kembali pengecekan foreign key
 PRAGMA foreign_keys = ON;
-
--- Commit transaksi
-COMMIT;

@@ -2,12 +2,25 @@
 -- Description: Menyimpan data suplier untuk modul Pengadaan.
 -- Standard: Mengikuti aturan DatabaseRule.md dengan pola Shadow Table Migration
 
-BEGIN TRANSACTION;
 PRAGMA foreign_keys = OFF;
 
--- 1. [PENTING] Handler Baseline: Pastikan tabel target ada (minimal struktur ID)
+-- 1. [PENTING] Handler Baseline: Pastikan tabel target ada dengan struktur kolom dasar
 CREATE TABLE IF NOT EXISTS suplier (
-    id TEXT PRIMARY KEY
+    id TEXT PRIMARY KEY,
+    name TEXT,
+    telepon TEXT,
+    email TEXT,
+    latlong TEXT,
+    alamat TEXT,
+    bank_name TEXT,
+    no_rekening TEXT,
+    nama_pemilik_rekening TEXT,
+    created_at DATETIME,
+    created_by TEXT,
+    created_timezone TEXT,
+    updated_at DATETIME,
+    updated_by TEXT,
+    updated_timezone TEXT
 );
 
 -- 2. Buat tabel bayangan dengan skema FINAL/Paling Update
@@ -75,4 +88,3 @@ BEGIN
 END;
 
 PRAGMA foreign_keys = ON;
-COMMIT;

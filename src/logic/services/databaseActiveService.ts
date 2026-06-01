@@ -3,7 +3,7 @@
  * Service to handle database keep-alive (ping) logic.
  */
 
-import { dbClient } from '../libs/database';
+import { dbClient } from '../libs/database.js';
 
 export const databaseActiveService = {
   /**
@@ -63,7 +63,7 @@ export const databaseActiveService = {
     try {
       const fs = await import('fs');
       const path = await import('path');
-      const { getTursoClient } = await import('../api/turso');
+      const { getTursoClient } = await import('../api/turso.js');
 
       const databaseDir = path.join(process.cwd(), 'database');
       if (!fs.existsSync(databaseDir)) {

@@ -3,7 +3,7 @@
  * Acts as a centralized logic layer for database interactions.
  */
 
-import { tursoRequest } from '../api/turso';
+import { tursoRequest } from '../api/turso.js';
 
 export const dbClient = {
   /**

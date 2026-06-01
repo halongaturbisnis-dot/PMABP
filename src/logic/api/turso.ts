@@ -1,5 +1,5 @@
 import { createClient, Client } from "@libsql/client/web";
-import { config } from "../utils/config";
+import { config } from "../utils/config.js";
 
 let clientInstance: Client | null = null;
 

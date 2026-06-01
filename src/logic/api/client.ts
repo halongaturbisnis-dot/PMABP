@@ -9,9 +9,11 @@ const getHeaders = () => {
     'Content-Type': 'application/json',
   };
   
-  const token = localStorage.getItem('token');
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const token = localStorage.getItem('token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
   }
   
   return headers;
@@ -19,7 +21,8 @@ const getHeaders = () => {
 
 export const apiClient = {
   get: async <T>(url: string, params?: Record<string, string>, signal?: AbortSignal): Promise<T> => {
-    const fullUrl = new URL(url, window.location.origin);
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    const fullUrl = new URL(url, baseUrl || undefined);
     if (params) {
       Object.entries(params).forEach(([key, value]) => fullUrl.searchParams.append(key, value));
     }

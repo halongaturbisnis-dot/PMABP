@@ -1,4 +1,4 @@
-import { notify } from './notificationService';
+import { notify } from './notificationService.js';
 
 /**
  * Standardized Error Service

@@ -25,17 +25,19 @@ let lastSyncMetadata: { timezone?: string; offset?: number } = {};
 
 export async function syncActualTime(): Promise<number> {
   // 1. Prioritaskan Origin Server (Self) - Paling aman dari CORS dan rendah latency
-  try {
-    const response = await fetch(window.location.origin, { method: 'HEAD', cache: 'no-store' });
-    const dateStr = response.headers.get('Date');
-    if (dateStr) {
-      const actualTime = new Date(dateStr).getTime();
-      timeDrift = Date.now() - actualTime;
-      isSynced = true;
-      lastSyncSource = 'Origin Server';
-      return actualTime;
-    }
-  } catch (e) { /* ignore */ }
+  if (typeof window !== 'undefined') {
+    try {
+      const response = await fetch(window.location.origin, { method: 'HEAD', cache: 'no-store' });
+      const dateStr = response.headers.get('Date');
+      if (dateStr) {
+        const actualTime = new Date(dateStr).getTime();
+        timeDrift = Date.now() - actualTime;
+        isSynced = true;
+        lastSyncSource = 'Origin Server';
+        return actualTime;
+      }
+    } catch (e) { /* ignore */ }
+  }
 
   // 2. Waterfall ke External APIs
   for (const server of TIME_SERVERS) {

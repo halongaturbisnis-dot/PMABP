@@ -6,24 +6,24 @@ export const config = {
   geminiApiKey: typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : '',
   groqApiKey: typeof process !== 'undefined' ? process.env.GROQ_API_KEY : '',
   // @ts-ignore
-  appUrl: (import.meta as any).env?.VITE_APP_URL || (typeof process !== 'undefined' ? process.env.VITE_APP_URL : ''),
+  appUrl: (import.meta as any).env?.VITE_APP_URL || (typeof process !== 'undefined' ? (process.env.VITE_APP_URL || process.env.APP_URL) : ''),
   
   tigris: {
     // @ts-ignore
-    bucket: (import.meta as any).env?.VITE_TIGRIS_STORAGE_BUCKET || (typeof process !== 'undefined' ? process.env.VITE_TIGRIS_STORAGE_BUCKET : ''),
+    bucket: (import.meta as any).env?.VITE_TIGRIS_STORAGE_BUCKET || (typeof process !== 'undefined' ? (process.env.VITE_TIGRIS_STORAGE_BUCKET || process.env.TIGRIS_STORAGE_BUCKET) : ''),
     // @ts-ignore
-    endpoint: (import.meta as any).env?.VITE_TIGRIS_STORAGE_ENDPOINT || (typeof process !== 'undefined' ? process.env.VITE_TIGRIS_STORAGE_ENDPOINT : ''),
+    endpoint: (import.meta as any).env?.VITE_TIGRIS_STORAGE_ENDPOINT || (typeof process !== 'undefined' ? (process.env.VITE_TIGRIS_STORAGE_ENDPOINT || process.env.TIGRIS_STORAGE_ENDPOINT) : ''),
     // @ts-ignore
-    accessKeyId: (import.meta as any).env?.VITE_TIGRIS_STORAGE_ACCESS_KEY_ID || (typeof process !== 'undefined' ? process.env.VITE_TIGRIS_STORAGE_ACCESS_KEY_ID : ''),
+    accessKeyId: (import.meta as any).env?.VITE_TIGRIS_STORAGE_ACCESS_KEY_ID || (typeof process !== 'undefined' ? (process.env.VITE_TIGRIS_STORAGE_ACCESS_KEY_ID || process.env.TIGRIS_STORAGE_ACCESS_KEY_ID) : ''),
     // @ts-ignore
-    secretAccessKey: (import.meta as any).env?.VITE_TIGRIS_STORAGE_SECRET_ACCESS_KEY || (typeof process !== 'undefined' ? process.env.VITE_TIGRIS_STORAGE_SECRET_ACCESS_KEY : ''),
+    secretAccessKey: (import.meta as any).env?.VITE_TIGRIS_STORAGE_SECRET_ACCESS_KEY || (typeof process !== 'undefined' ? (process.env.VITE_TIGRIS_STORAGE_SECRET_ACCESS_KEY || process.env.TIGRIS_STORAGE_SECRET_ACCESS_KEY) : ''),
   },
 
   turso: {
     // @ts-ignore
-    url: (import.meta as any).env?.VITE_TURSO_DB_URL || (typeof process !== 'undefined' ? process.env.VITE_TURSO_DB_URL : ''),
+    url: (import.meta as any).env?.VITE_TURSO_DB_URL || (typeof process !== 'undefined' ? (process.env.VITE_TURSO_DB_URL || process.env.TURSO_DB_URL) : ''),
     // @ts-ignore
-    authToken: (import.meta as any).env?.VITE_TURSO_DB_AUTH_TOKEN || (typeof process !== 'undefined' ? process.env.VITE_TURSO_DB_AUTH_TOKEN : ''),
+    authToken: (import.meta as any).env?.VITE_TURSO_DB_AUTH_TOKEN || (typeof process !== 'undefined' ? (process.env.VITE_TURSO_DB_AUTH_TOKEN || process.env.TURSO_DB_AUTH_TOKEN) : ''),
   },
 
   // @ts-ignore

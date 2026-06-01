@@ -203,12 +203,13 @@ app.get("/api/proxy-image", async (req, res) => {
 });
 
 // Tigris Private Storage Proxy
-app.get("/api/images/:key(*)", async (req, res) => {
+app.get("/api/images/*", async (req, res) => {
   try {
-    const { key } = req.params;
+    const key = req.params[0];
     const bucketName = config.tigris.bucket;
 
     if (!bucketName) {
+      console.error("[Tigris Proxy Error]: Bucket name is missing in configuration");
       res.status(500).send("Storage bucket not configured");
       return;
     }
@@ -228,14 +229,14 @@ app.get("/api/images/:key(*)", async (req, res) => {
     if (response.Body) {
       (response.Body as Readable).pipe(res);
     } else {
-      res.status(404).send("File not found");
+      res.status(404).send("File not found in storage body");
     }
   } catch (error: any) {
     if (error.name === "NoSuchKey") {
-      res.status(404).send("File not found");
+      res.status(404).send("File not found (NoSuchKey)");
     } else {
-      console.error("[Tigris Proxy Error]:", error);
-      res.status(500).send("Failed to fetch image from storage");
+      console.error("[Tigris Proxy Error]:", error?.message || error);
+      res.status(500).send(`Failed to fetch image from storage: ${error?.message || 'Unknown Error'}`);
     }
   }
 });

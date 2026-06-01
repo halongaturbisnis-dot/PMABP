@@ -1,10 +1,10 @@
-import { dbClient } from '../libs/database';
-import { IStokBerjalan, IStokBerjalanPayload } from '../types/ITs_StokBerjalan';
-import { generateUUID } from '../utils/data';
-import { errorService } from './errorService';
-import { browserStorage } from '../utils/browserStorage';
-import { getTimezoneIdentifier } from '../utils/time';
-import { IAkunSession } from '../types/ITs_Akun';
+import { dbClient } from '../libs/database.js';
+import { IStokBerjalan, IStokBerjalanPayload } from '../types/ITs_StokBerjalan.js';
+import { generateUUID } from '../utils/data.js';
+import { errorService } from './errorService.js';
+import { browserStorage } from '../utils/browserStorage.js';
+import { getTimezoneIdentifier } from '../utils/time.js';
+import { IAkunSession } from '../types/ITs_Akun.js';
 
 /**
  * STOK BERJALAN SERVICE
