@@ -152,6 +152,23 @@ app.post("/api/database/ping", async (req, res) => {
   res.json(result);
 });
 
+app.post("/api/db/sync", async (req, res) => {
+  try {
+    const hasilSync = await databaseActiveService.syncAllSchemas();
+    return res.json({
+      success: hasilSync.success,
+      message: hasilSync.success ? "Database berhasil disinkronisasikan!" : "Beberapa skema gagal disinkronisasikan.",
+      details: hasilSync.details
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: "Gagal menyelaraskan database",
+      error: error.message
+    });
+  }
+});
+
 app.get("/api/proxy-image", async (req, res) => {
   try {
     const { url } = req.query;

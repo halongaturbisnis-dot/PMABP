@@ -25,6 +25,9 @@ export const config = {
     // @ts-ignore
     authToken: (import.meta as any).env?.VITE_TURSO_DB_AUTH_TOKEN || (typeof process !== 'undefined' ? process.env.VITE_TURSO_DB_AUTH_TOKEN : ''),
   },
+
+  // @ts-ignore
+  showDbSyncButton: (import.meta as any).env?.VITE_SHOW_DB_SYNC_BUTTON !== 'false',
   
   validate: () => {
     const isServer = typeof process !== 'undefined';

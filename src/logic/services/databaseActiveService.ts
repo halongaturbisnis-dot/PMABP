@@ -53,5 +53,74 @@ export const databaseActiveService = {
       console.error('Failed to fetch last ping:', error);
       return null;
     }
+  },
+
+  /**
+   * Synchronizes all database schemas from the /database folder
+   */
+  async syncAllSchemas(): Promise<{ success: boolean; message: string; details: any[] }> {
+    const details: any[] = [];
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const { getTursoClient } = await import('../api/turso');
+
+      const databaseDir = path.join(process.cwd(), 'database');
+      if (!fs.existsSync(databaseDir)) {
+        throw new Error(`Database directory not found at: ${databaseDir}`);
+      }
+
+      // Read all files in /database folder
+      const files = fs.readdirSync(databaseDir);
+      const sqlFiles = files
+        .filter((file) => file.endsWith('.sql'))
+        .sort((a, b) => {
+          // Sort to run dependencies first if necessary (e.g., table with foreign keys after referenced tables)
+          // For simplicity and standard alphabetical flow, PingMonitoring is usually at the end.
+          if (a === 'PingMonitoring.sql') return 1;
+          if (b === 'PingMonitoring.sql') return -1;
+          return a.localeCompare(b);
+        });
+
+      const client = getTursoClient();
+
+      for (const file of sqlFiles) {
+        const filePath = path.join(databaseDir, file);
+        const sqlContent = fs.readFileSync(filePath, 'utf-8');
+
+        // Check if there are destructive SQL commands like dropping main tables without shadow patterns
+        // Our SQL files use the "Shadow Table Re-creation" pattern, which is safe and idempotent.
+        // We will execute the entire .sql file contents using executeMultiple to preserve triggers/transactions.
+        try {
+          await client.executeMultiple(sqlContent);
+          details.push({
+            file,
+            status: 'SUCCESS',
+            message: 'Successfully executed schema and structures'
+          });
+        } catch (execError: any) {
+          console.error(`Failed to execute SQL file: ${file}`, execError);
+          details.push({
+            file,
+            status: 'FAILED',
+            message: execError?.message || 'Execution error'
+          });
+        }
+      }
+
+      const overallSuccess = details.every(d => d.status === 'SUCCESS');
+      return {
+        success: overallSuccess,
+        message: overallSuccess ? 'All database schemas synced successfully.' : 'Some schemas failed to sync.',
+        details
+      };
+    } catch (error: any) {
+      console.error('Schema Sync Error:', error);
+      return {
+        success: false,
+        message: error?.message || 'Internal error during synchronization',
+        details
+      };
+    }
   }
 };
