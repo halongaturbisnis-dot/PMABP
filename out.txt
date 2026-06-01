@@ -1,6 +1,3 @@
-380:    <div id={id} className="bg-slate-100 flex flex-col gap-6 select-none print:bg-white print:gap-0">
-385:            className="invoice-page-sheet bg-white text-black font-sans leading-relaxed relative flex flex-col justify-between border border-slate-200 shadow-sm print:border-0 print:shadow-none"
-401:                <div className="mb-6 border-b-2 border-slate-800 pb-6">
 413:                    <p className="text-xs text-slate-600 max-w-[400px] leading-relaxed break-words">
 418:                    <h2 className="text-3xl font-black tracking-wider uppercase text-slate-800 mb-2">
 421:                    <div className="text-xs text-slate-600 space-y-1">
@@ -9,20 +6,13 @@
 424:                        {data.submission_number && <p><span className="font-semibold text-slate-800">No. Pengajuan:</span> {data.submission_number}</p>}
 431:                <div className="flex justify-between items-center mb-6 border-b border-slate-300 pb-3 text-xs text-slate-500">
 432:                  <span className="font-bold uppercase tracking-wider text-slate-700">{appAssets.Company} &bull; INVOICE</span>
-440:                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 flex flex-col justify-start w-full">
 441:                    <h3 className="font-bold text-slate-800 uppercase text-xs tracking-wider mb-2 border-b border-slate-200 pb-1">Kepada:</h3>
 442:                    <p className="font-bold text-slate-950 text-base">Tn/Ny. {data.customer_name}</p>
 443:                    {data.customer_company && <p className="font-semibold text-slate-700 text-xs mt-0.5">{data.customer_company}</p>}
 444:                    {data.customer_address && <p className="text-xs text-slate-600 mt-1 leading-normal w-full break-words">{data.customer_address}</p>}
 445:                    {data.customer_phone && <p className="text-xs text-slate-600 mt-1.5 font-mono"><span className="font-sans text-slate-500">Telp</span> {data.customer_phone}</p>}
 453:                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">Daftar Produk:</h3>
-454:                  <table className="w-full table-fixed border-collapse border border-slate-300 text-xs">
 462:                      <tr className="bg-slate-100 text-slate-800 border-b border-slate-300">
-463:                        <th className="border border-slate-300 px-3 py-2 font-bold text-center">No</th>
-464:                        <th className="border border-slate-300 px-3 py-2 font-bold text-left">Nama Produk</th>
-465:                        <th className="border border-slate-300 px-3 py-2 font-bold text-center">Jumlah</th>
-466:                        <th className="border border-slate-300 px-3 py-2 font-bold text-right">Harga</th>
-473:                          <tr key={rowIdx} className="hover:bg-slate-50 border-b border-slate-200">
 474:                            <td className="border border-slate-300 px-3 py-2 text-center text-slate-500 truncate">{row.originalIndex + 1}</td>
 475:                            <td className="border border-slate-300 px-3 py-2 font-semibold text-slate-900 break-words">
 478:                            <td className="border border-slate-300 px-3 py-2 text-center font-semibold text-slate-800 truncate">{item.qty} {item.unit}</td>
@@ -30,58 +20,56 @@
 491:                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">Biaya Tambahan:</h3>
 492:                  <table className="w-full table-fixed border-collapse border border-slate-300 text-xs text-slate-800">
 500:                      <tr className="bg-slate-100 text-slate-800 border-b border-slate-300">
-501:                        <th className="border border-slate-300 px-3 py-2 font-bold text-center">No</th>
-502:                        <th className="border border-slate-300 px-3 py-2 font-bold text-left">Nama Biaya</th>
-503:                        <th className="border border-slate-300 px-3 py-2 font-bold text-left">Keterangan</th>
-504:                        <th className="border border-slate-300 px-3 py-2 font-bold text-right">Nominal</th>
-511:                          <tr key={rowIdx} className="hover:bg-slate-50 border-b border-slate-200">
 512:                            <td className="border border-slate-300 px-3 py-2 text-center text-slate-500 truncate">{row.originalIndex + 1}</td>
 513:                            <td className="border border-slate-300 px-3 py-2 font-semibold text-slate-900 break-words">{cost.nama_biaya}</td>
 514:                            <td className="border border-slate-300 px-3 py-2 text-slate-600 italic text-[11px] break-words">{cost.keterangan || '-'}</td>
 515:                            <td className="border border-slate-300 px-3 py-2 text-right font-bold text-slate-900 truncate">Rp {(cost.nominal || 0).toLocaleString('id-ID')}</td>
-527:                  <div className="border border-dashed border-slate-300 p-4 rounded-lg bg-slate-50/50">
 528:                    <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-1.5 mb-2 flex items-center gap-1.5">
 532:                    <table className="w-full text-xs text-slate-700">
 535:                          <td className="py-1 text-slate-500">Tipe Pembayaran</td>
 536:                          <td className="py-1 font-semibold text-right text-slate-800">{data.payment_type || '-'}</td>
 539:                          <td className="py-1 text-slate-500">Metode Pembayaran</td>
 540:                          <td className="py-1 font-semibold text-right text-slate-800">{data.payment_method || '-'}</td>
-542:                        <tr className="border-t border-slate-200/50">
 543:                          <td className="py-1 text-slate-500">Uang Muka (Deposit)</td>
 544:                          <td className="py-1 font-bold text-right text-slate-900">Rp {(data.deposit || 0).toLocaleString('id-ID')}</td>
 547:                          <td className="py-1 text-slate-500">Sisa Piutang (Outstanding)</td>
-551:                          <tr className="border-t border-dashed border-slate-300">
+548:                          <td className="py-1 font-bold text-right text-red-655">Rp {(data.outstanding || 0).toLocaleString('id-ID')}</td>
 552:                            <td className="py-1.5 font-bold text-slate-800">SLA Tanggal Jatuh Tempo</td>
 563:                    <table className="w-full border-collapse border border-slate-300 text-xs text-slate-800">
-565:                        <tr className="border-b border-slate-300">
 566:                          <td className="p-2.5 font-semibold bg-slate-50 text-slate-600">Subtotal Barang</td>
 567:                          <td className="p-2.5 text-right font-bold text-slate-800">Rp {(data.sum_product_price || 0).toLocaleString('id-ID')}</td>
-569:                        <tr className="border-b border-slate-300">
 570:                          <td className="p-2.5 font-semibold bg-slate-50 text-slate-600">Total Biaya Tambahan</td>
 571:                          <td className="p-2.5 text-right font-bold text-slate-800">Rp {(data.sum_added_cost || 0).toLocaleString('id-ID')}</td>
-573:                        <tr className="border-b border-slate-300">
 574:                          <td className="p-2.5 font-semibold bg-slate-50 text-slate-600">Diskon</td>
-577:                        <tr className="border-b border-slate-300">
 578:                          <td className="p-2.5 font-semibold bg-slate-50 text-slate-600">Grand Total</td>
 579:                          <td className="p-2.5 text-right font-bold text-slate-800">Rp {(data.grand_total || 0).toLocaleString('id-ID')}</td>
-581:                        <tr className="bg-slate-100 border-t border-slate-300">
 582:                          <td className="p-3 font-bold text-slate-800 uppercase text-xs">Total Tagihan</td>
 583:                          <td className="p-3 text-right font-black text-slate-950 text-base">
 597:                    <p className="text-xs text-slate-500 mb-1 leading-none">Hormat Kami,</p>
 598:                    <p className="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-wider">{appAssets.Company}</p>
-600:                    <div className="h-20 w-full relative flex items-center justify-center border border-dashed border-slate-200 rounded my-2 bg-slate-50/30 overflow-hidden">
 610:                        <p className="text-[10px] text-slate-400 italic">Belum disetujui</p>
 614:                    <p className="font-bold text-xs border-b border-slate-500 pb-1 text-slate-900 truncate">
 617:                    <p className="text-[10px] text-slate-500 mt-1 uppercase font-semibold">
 626:            <div className="mt-4 border-t border-slate-100 pt-2 flex justify-between items-center text-[10px] text-slate-400 font-mono">
-934:    <div className="fixed inset-0 z-[99999] flex flex-col bg-slate-900/80 backdrop-blur-sm select-none">
-936:        "flex flex-shrink-0 bg-white border-b border-slate-200 shadow-md",
 940:          <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
 944:          <p className="text-[11px] text-slate-500 font-medium">
-955:                "flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-slate-800 hover:bg-slate-900 rounded-lg active:scale-95 transition-all disabled:opacity-50",
-979:            <div className="w-px h-6 bg-slate-200 mx-1" />
 983:              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all cursor-pointer"
-992:      <div className="flex-1 overflow-x-auto overflow-y-auto p-6 flex justify-center items-start bg-slate-100">
-996:              <div className="w-10 h-10 border-4 border-slate-800 border-t-transparent rounded-full animate-spin mb-3"></div>
 997:              <p className="text-xs font-bold text-slate-800">Menyusun Dokumen PDF...</p>
 998:              <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-wide">Harap Tunggu Sebentar</p>
+1349:                <Calendar size={14} className="text-gray-500" />
+1369:                <Hash size={14} className="text-gray-500" />
+1422:                  data.approval_status === 'Approved' ? "bg-green-100 text-green-700" :
+1423:                  "bg-red-100 text-red-700"
+1869:                      <p className="text-sm text-gray-800 break-words max-w-sm">
+1885:                      <p className="font-semibold text-gray-700">{data.customer_company || '-'}</p>
+1924:                          <td colSpan={3} className="p-4 text-center text-gray-500 italic">Belum ada barang</td>
+1943:                          <td className="border-r border-gray-800 p-2 text-left text-[0.6875rem] italic text-gray-600">{cost.keterangan || '-'}</td>
+1949:                          <td colSpan={3} className="p-4 text-center text-gray-500 italic">Tidak ada biaya tambahan</td>
+1981:                                <td className="py-1 font-bold text-gray-800">Batas Max (SLA)</td>
+1982:                                <td className="py-1 text-gray-800 font-bold">: {data.sla_date ? new Date(data.sla_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</td>
+2010:                                <td className="py-1 font-bold text-gray-800">Batas Max (SLA)</td>
+2011:                                <td className="py-1 text-gray-800 font-bold">: {data.sla_date ? new Date(data.sla_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</td>
+2026:                            <td className="p-2.5 font-bold border-r border-gray-800 text-left bg-gray-50 text-gray-700 text-[0.8125rem]">Diskon</td>
+2027:                            <td className="p-2.5 text-gray-700 font-medium text-[0.8125rem]">- Rp {(data.discount_amount || 0).toLocaleString('id-ID')}</td>
+2030:                            <td className="p-2.5 font-bold border-r border-gray-800 text-left bg-gray-50 text-gray-700 text-[0.8125rem]">Grand Total</td>
+2031:                            <td className="p-2.5 text-gray-700 font-medium text-[0.8125rem]">Rp {(data.grand_total || 0).toLocaleString('id-ID')}</td>

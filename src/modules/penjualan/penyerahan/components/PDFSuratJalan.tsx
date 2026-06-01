@@ -1,3 +1,4 @@
+import { injectTailwindHexFallback } from '../../../../logic/utils/pdf';
 import React from 'react';
 import { IPenyerahanPayload } from '../../../../logic/types/ITs_Penyerahan';
 import { appAssets } from '../../../../ui/styles/assets';
@@ -110,11 +111,11 @@ export const SuratJalanTemplate: React.FC<PDFSuratJalanProps> = ({ data, id = "s
   const totalPages = pages.length;
 
   return (
-    <div id={id} className="bg-Slate100 flex flex-col gap-6 select-none print:bg-white print:gap-0">
+    <div id={id} className="bg-slate-100 flex flex-col gap-6 select-none print:bg-white print:gap-0">
       {pages.map((page, idx) => (
         <div 
           key={idx}
-          className="surat-jalan-page-sheet bg-white text-black font-sans leading-relaxed relative flex flex-col justify-between border border-Slate200 shadow-sm print:border-0 print:shadow-none"
+          className="surat-jalan-page-sheet bg-white text-black font-sans leading-relaxed relative flex flex-col justify-between border border-slate-200 shadow-sm print:border-0 print:shadow-none"
           style={{ 
             width: "794px", 
             height: "1123px", 
@@ -198,7 +199,7 @@ export const SuratJalanTemplate: React.FC<PDFSuratJalanProps> = ({ data, id = "s
                     {data.driver_phone && (
                       <>
                         <span style={{ color: '#64748B' }}>Telp Supir:</span>
-                        <span className="font-mono text-Slate800" style={{ color: '#1E293B' }}>{data.driver_phone}</span>
+                        <span className="font-mono text-slate-800" style={{ color: '#1E293B' }}>{data.driver_phone}</span>
                       </>
                     )}
                   </div>
@@ -293,24 +294,9 @@ export const SuratJalanPreviewModal: React.FC<{
   if (!isOpen) return null;
 
   const fixHtml2CanvasOklch = (clonedDoc: Document) => {
-    // OKLCH Fix - html2canvas cannot parse oklch/oklab/color-mix
-    const colorRegex = /(oklch|oklab|color-mix|display-p3|hwb)\([^)]+\)/g;
-    
-    // 1. Fix Style Tags
-    const styleTags = clonedDoc.getElementsByTagName('style');
-    for (let j = 0; j < styleTags.length; j++) {
-      styleTags[j].innerHTML = styleTags[j].innerHTML.replace(colorRegex, '#475569');
-    }
-    
-    // 2. Fix Inline Styles on all elements
-    const allElements = clonedDoc.getElementsByTagName('*');
-    for (let j = 0; j < allElements.length; j++) {
-      const el = allElements[j] as HTMLElement;
-      if (el.style && el.style.cssText && colorRegex.test(el.style.cssText)) {
-          el.style.cssText = el.style.cssText.replace(colorRegex, '#475569');
-      }
-      
-      // Also check computed styles if possible, but onclone should be enough for inline/style tags
+    const rootEl = clonedDoc.documentElement;
+    if (rootEl) {
+      injectTailwindHexFallback(rootEl);
     }
   };
 
@@ -407,7 +393,7 @@ export const SuratJalanPreviewModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex flex-col bg-Slate900/80 backdrop-blur-sm select-none">
+    <div className="fixed inset-0 z-[60] flex flex-col bg-slate-900 backdrop-blur-sm select-none">
       <div className={cn(
         "flex bg-white border-b",
         isMobile ? "flex-col p-SpacingMedium gap-SpacingBase" : "flex-row justify-between items-center px-6 py-4"
@@ -415,8 +401,8 @@ export const SuratJalanPreviewModal: React.FC<{
         <div className="flex items-center gap-3">
           <FileText className="text-[#D4AF37]" size={20} />
           <div>
-            <h2 className="font-black text-Slate900 text-sm">Pratinjau Surat Jalan</h2>
-            <p className="text-[10px] text-Slate500 uppercase tracking-wider">{data.surat_jalan_number}</p>
+            <h2 className="font-black text-slate-900 text-sm">Pratinjau Surat Jalan</h2>
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider">{data.surat_jalan_number}</p>
           </div>
         </div>
         <div className={cn("flex items-center gap-2", isMobile && "w-full justify-between")}>
@@ -425,7 +411,7 @@ export const SuratJalanPreviewModal: React.FC<{
               onClick={handleDownload} 
               disabled={isGenerating} 
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-Slate800 rounded-lg hover:bg-Slate900 disabled:opacity-50 transition-all",
+                "flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-slate-800 rounded-lg hover:bg-slate-900 disabled:opacity-50 transition-all",
                 isMobile && "px-SpacingSmall"
               )}
             >
@@ -444,22 +430,22 @@ export const SuratJalanPreviewModal: React.FC<{
           </div>
           
           <div className="flex items-center gap-2">
-             <div className="w-px h-6 bg-Slate200 mx-1" />
-             <button onClick={onClose} className="p-1.5 text-Slate400 hover:text-Slate600 hover:bg-Slate100 rounded-lg transition-all">
+             <div className="w-px h-6 bg-slate-200 mx-1" />
+             <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
                <X size={20} />
              </button>
           </div>
         </div>
       </div>
       <div className={cn(
-        "flex-1 overflow-auto flex justify-center bg-Slate100",
+        "flex-1 overflow-auto flex justify-center bg-slate-100",
         isMobile ? "p-SpacingSmall" : "p-8"
       )}>
         <div className="relative shadow-2xl bg-white h-fit">
           {isGenerating && (
              <div className="absolute inset-0 z-50 flex flex-col justify-center items-center bg-white/70 backdrop-blur-sm">
-                <div className="w-8 h-8 border-3 border-Slate800 border-t-transparent rounded-full animate-spin mb-2"></div>
-                <p className="text-[10px] font-bold text-Slate800 uppercase tracking-widest">Menyiapkan PDF...</p>
+                <div className="w-8 h-8 border-3 border-slate-800 border-t-transparent rounded-full animate-spin mb-2"></div>
+                <p className="text-[10px] font-bold text-slate-800 uppercase tracking-widest">Menyiapkan PDF...</p>
              </div>
           )}
           <SuratJalanTemplate id="preview-sj-paper" data={data} />
