@@ -41,11 +41,36 @@ export const config = {
 
 ---
 
-## 4. Penanganan Common Issues (Vercel specific)
+## 4. Penanganan Common Issues (Vercel & Node.js ESM)
 
-1. **Case Sensitivity**: Vercel menggunakan Linux (Case Sensitive). Pastikan semua import file sesuai dengan nama file aslinya (misal: `App.tsx` vs `app.tsx`).
-2. **Build Failure**: Pastikan `lint_applet` lolos 100% sebelum mencoba mendeploy. Vercel akan menghentikan build jika ada error TypeScript.
-3. **API Proxies**: Jika menggunakan backend proxy di AI Studio (`server.ts`), pastikan konfigurasi `vercel.json` sudah disiapkan untuk mengarahkan route `/api/*` ke serverless functions jika diperlukan.
+Untuk memastikan aplikasi berjalan dengan sempurna di Vercel (Production) dan AI Studio (Server-side), aturan berikut **WAJIB** diikuti:
+
+### A. Node.js ESM Import Requirement (Ekstensi .js)
+Node.js Runtime (ESM mode) mensyaratkan semua **relative import** di dalam folder logika bersama (`src/logic/*`) menyertakan ekstensi file (secara teknis menggunakan `.js` meskipun file aslinya `.ts`).
+- **SALAH**: `import { config } from '../utils/config';`
+- **BENAR**: `import { config } from '../utils/config.js';`
+*Catatan: Hal ini krusial agar logika di `src/logic` dapat dipanggil baik oleh React (Vite) maupun API Backend (Node.js).*
+
+### B. Isomorphic Logic (SSR Safety)
+Logika di `src/logic/*` sering kali dipanggil oleh Backend (API). Karena Backend tidak memiliki browser API, semua pemanggilan objek global harus diproteksi:
+1. **Guard `window` & `localStorage`**:
+   ```typescript
+   if (typeof window !== 'undefined' && window.localStorage) {
+     const token = localStorage.getItem('token');
+   }
+   ```
+2. **Handle `fetch` Base URL**:
+   Di sisi server, `window.location.origin` tidak tersedia. Gunakan logika fallback:
+   ```typescript
+   const baseUrl = typeof window !== 'undefined' ? window.location.origin : (process.env.APP_URL || '');
+   ```
+
+### C. Flexible Environment Access
+Sistem build yang berbeda (Vite vs standard CI/CD) seringkali menggunakan prefix variabel yang berbeda. `config.ts` harus mampu mendeteksi keduanya:
+```typescript
+// Contoh akses bucket storage di config.ts
+bucket: process.env.VITE_TIGRIS_STORAGE_BUCKET || process.env.TIGRIS_STORAGE_BUCKET || ''
+```
 
 ---
 

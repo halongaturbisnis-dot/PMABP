@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { tokens } from '../../ui/styles/tokens';
-import { appAssets } from '../../ui/styles/assets';
+import { tokens } from '../../ui/styles/tokens.js';
+import { appAssets } from '../../ui/styles/assets.js';
 
-import { syncActualTime, getTimezoneInfo } from '../utils/time';
-import { browserStorage } from '../utils/browserStorage';
+import { syncActualTime, getTimezoneInfo } from '../utils/time.js';
+import { browserStorage } from '../utils/browserStorage.js';
 
 import idTranslations from '../locales/id.json';
 import enTranslations from '../locales/en.json';

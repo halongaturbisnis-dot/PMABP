@@ -1,6 +1,6 @@
-import { akunService } from './akunService';
-import { IAkunSession } from '../types/ITs_Akun';
-import { browserStorage } from '../utils/browserStorage';
+import { akunService } from './akunService.js';
+import { IAkunSession } from '../types/ITs_Akun.js';
+import { browserStorage } from '../utils/browserStorage.js';
 
 /**
  * SERVICES/AUTHSERVICE.TS
@@ -24,10 +24,12 @@ class AuthService {
    * Standard logout.
    */
   logout(): void {
-    browserStorage.remove(this.TOKEN_KEY);
-    browserStorage.remove(this.USER_KEY);
-    // Use relative path for redirection to maintain environment safety (AGENTS.md)
-    window.location.href = '/login';
+    if (typeof window !== 'undefined') {
+      browserStorage.remove(this.TOKEN_KEY);
+      browserStorage.remove(this.USER_KEY);
+      // Use relative path for redirection to maintain environment safety (AGENTS.md)
+      window.location.href = '/login';
+    }
   }
 
   /**

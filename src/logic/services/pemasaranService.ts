@@ -1,13 +1,13 @@
-import { dbClient } from '../libs/database';
-import { IPemasaran, IPemasaranActivityType } from '../types/ITs_Pemasaran';
-import { errorService } from './errorService';
-import { akunService } from './akunService';
-import { generateUUID } from '../utils/data';
-import { getPageFetchLimit } from './fetchingCenter';
-import { getActualTime, getTimezoneIdentifier } from '../utils/time';
-import { storageService } from './storage';
-import { customerService } from './customerService';
-import { ICustomer } from '../types/ITs_Customer';
+import { dbClient } from '../libs/database.js';
+import { IPemasaran, IPemasaranActivityType } from '../types/ITs_Pemasaran.js';
+import { errorService } from './errorService.js';
+import { akunService } from './akunService.js';
+import { generateUUID } from '../utils/data.js';
+import { getPageFetchLimit } from './fetchingCenter.js';
+import { getActualTime, getTimezoneIdentifier } from '../utils/time.js';
+import { storageService } from './storage.js';
+import { customerService } from './customerService.js';
+import { ICustomer } from '../types/ITs_Customer.js';
 
 export interface IPemasaranWithCustomer extends IPemasaran {
   customer_name: string;

@@ -1,11 +1,11 @@
-import { dbClient } from '../libs/database';
-import { ITs_Pemrosesan, IPemrosesanPayload, IPemrosesanUpdatePayload, ITs_PemrosesanLog, IPemrosesanLogPayload } from '../types/ITs_Pemrosesan';
-import { errorService } from './errorService';
-import { storageService } from './storage';
-import { akunService } from './akunService';
-import { generateUUID } from '../utils/data';
-import { getPageFetchLimit } from './fetchingCenter';
-import { getTimezoneIdentifier } from '../utils/time';
+import { dbClient } from '../libs/database.js';
+import { ITs_Pemrosesan, IPemrosesanPayload, IPemrosesanUpdatePayload, ITs_PemrosesanLog, IPemrosesanLogPayload } from '../types/ITs_Pemrosesan.js';
+import { errorService } from './errorService.js';
+import { storageService } from './storage.js';
+import { akunService } from './akunService.js';
+import { generateUUID } from '../utils/data.js';
+import { getPageFetchLimit } from './fetchingCenter.js';
+import { getTimezoneIdentifier } from '../utils/time.js';
 
 /**
  * PEMROSESAN SERVICE

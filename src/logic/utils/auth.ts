@@ -1,5 +1,5 @@
-import { IAkunSession, TPeran } from '../types/ITs_Akun';
-import { MENU_ITEMS } from '../constants/menu';
+import { IAkunSession, TPeran } from '../types/ITs_Akun.js';
+import { MENU_ITEMS } from '../constants/menu.js';
 
 /**
  * Utility to check if a user can access a specific menu or path.

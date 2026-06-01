@@ -3,7 +3,7 @@
  * High-level services for data management, caching, and mapping.
  */
 
-import { browserStorage } from '../utils/browserStorage';
+import { browserStorage } from '../utils/browserStorage.js';
 
 // 1. Data Cache Wrapper
 export const cacheData = <T>(key: string, data: T, expiryMinutes: number = 60) => {

@@ -1,10 +1,10 @@
-import { dbClient } from '../libs/database';
-import { IAkun, IAkunSession, TPeran, TModul } from '../types/ITs_Akun';
-import { storageService } from './storage';
-import { obfuscate } from '../libs/crypto';
-import { generateUUID } from '../utils/data';
-import { errorService } from './errorService';
-import { browserStorage } from '../utils/browserStorage';
+import { dbClient } from '../libs/database.js';
+import { IAkun, IAkunSession, TPeran, TModul } from '../types/ITs_Akun.js';
+import { storageService } from './storage.js';
+import { obfuscate } from '../libs/crypto.js';
+import { generateUUID } from '../utils/data.js';
+import { errorService } from './errorService.js';
+import { browserStorage } from '../utils/browserStorage.js';
 
 /**
  * AKUN SERVICE

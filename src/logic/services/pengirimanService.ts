@@ -1,15 +1,15 @@
-import { dbClient } from '../libs/database';
+import { dbClient } from '../libs/database.js';
 import { 
   IPengiriman, 
   IPengirimanPayload, 
   TPengirimanStatus,
   IPengirimanFile
-} from '../types/ITs_Pengiriman';
-import { errorService } from './errorService';
-import { storageService } from './storage';
-import { akunService } from './akunService';
-import { generateUUID } from '../utils/data';
-import { getPageFetchLimit } from './fetchingCenter';
+} from '../types/ITs_Pengiriman.js';
+import { errorService } from './errorService.js';
+import { storageService } from './storage.js';
+import { akunService } from './akunService.js';
+import { generateUUID } from '../utils/data.js';
+import { getPageFetchLimit } from './fetchingCenter.js';
 
 /**
  * PENGIRIMAN SERVICE

@@ -1,7 +1,7 @@
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { config } from '../utils/config';
-import { fileProcessor } from '../libs/fileProcessor';
-import { getS3Client } from '../libs/storageClient';
+import { config } from '../utils/config.js';
+import { fileProcessor } from '../libs/fileProcessor.js';
+import { getS3Client } from '../libs/storageClient.js';
 
 /**
  * STORAGE SERVICE
@@ -14,6 +14,10 @@ export const storageService = {
    * Uploads a file to Tigris with optional compression and public access.
    */
   async upload(file: File, path: string = 'uploads'): Promise<{ url: string; key: string }> {
+    if (typeof window === 'undefined') {
+      throw new Error('[Storage Error] Upload is only supported in browser environment');
+    }
+
     // 1. Client-side compression (per StorageRule.md)
     const processedBlob = await fileProcessor.process(file);
     const finalFile = processedBlob instanceof Blob ? new File([processedBlob], file.name, { type: processedBlob.type }) : processedBlob;
@@ -49,13 +53,21 @@ export const storageService = {
    */
   async delete(key: string): Promise<void> {
     if (!key) return;
-    console.log(`[Storage] Permanently deleting file with key: ${key}`);
+
+    // DEFENSIVE: If key is a full URL, extract the actual S3 Key
+    // Pattern: /api/images/profile-photos/file.jpg -> profile-photos/file.jpg
+    let actualKey = key;
+    if (key.includes('/api/images/')) {
+      actualKey = key.split('/api/images/').pop() || key;
+    }
+    
+    console.log(`[Storage] Permanently deleting file with key: ${actualKey}`);
     
     const client = getS3Client();
     try {
       await client.send(new DeleteObjectCommand({
         Bucket: config.tigris.bucket,
-        Key: key,
+        Key: actualKey,
       }));
     } catch (error) {
       console.warn('[Storage Warning] Delete failed (might be already gone):', error);

@@ -1,12 +1,12 @@
-import { dbClient } from '../libs/database';
-import { IStokTerbuang, IStokTerbuangPayload } from '../types/ITs_StokTerbuang';
-import { generateUUID } from '../utils/data';
-import { errorService } from './errorService';
-import { browserStorage } from '../utils/browserStorage';
-import { getTimezoneIdentifier } from '../utils/time';
-import { IAkunSession } from '../types/ITs_Akun';
-import { stokBerjalanService } from './stokBerjalanService';
-import { storageService } from './storage';
+import { dbClient } from '../libs/database.js';
+import { IStokTerbuang, IStokTerbuangPayload } from '../types/ITs_StokTerbuang.js';
+import { generateUUID } from '../utils/data.js';
+import { errorService } from './errorService.js';
+import { browserStorage } from '../utils/browserStorage.js';
+import { getTimezoneIdentifier } from '../utils/time.js';
+import { IAkunSession } from '../types/ITs_Akun.js';
+import { stokBerjalanService } from './stokBerjalanService.js';
+import { storageService } from './storage.js';
 
 /**
  * STOK TERBUANG SERVICE

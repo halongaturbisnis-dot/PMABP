@@ -1,11 +1,11 @@
-import { dbClient } from '../libs/database';
-import { IStokMasuk, IStokMasukPayload } from '../types/ITs_StokMasuk';
-import { generateUUID } from '../utils/data';
-import { errorService } from './errorService';
-import { browserStorage } from '../utils/browserStorage';
-import { getTimezoneIdentifier } from '../utils/time';
-import { IAkunSession } from '../types/ITs_Akun';
-import { stokBerjalanService } from './stokBerjalanService';
+import { dbClient } from '../libs/database.js';
+import { IStokMasuk, IStokMasukPayload } from '../types/ITs_StokMasuk.js';
+import { generateUUID } from '../utils/data.js';
+import { errorService } from './errorService.js';
+import { browserStorage } from '../utils/browserStorage.js';
+import { getTimezoneIdentifier } from '../utils/time.js';
+import { IAkunSession } from '../types/ITs_Akun.js';
+import { stokBerjalanService } from './stokBerjalanService.js';
 
 /**
  * STOK MASUK SERVICE
